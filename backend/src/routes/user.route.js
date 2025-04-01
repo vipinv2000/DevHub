@@ -5,7 +5,8 @@ import { protectRoute } from "../middleware/auth.middleware.js";
 import {
     acceptFollowRequest, addpost, getFeedPosts, getPendingRequests, requestFollow,
     getDevelopers, searchtecStack, addStory, getStory, getDeveloperProfile,
-    getAccountInteractions, getfollowingDevelopers, getfollowers, DoPostLike
+    getAccountInteractions, getfollowingDevelopers, getfollowers, DoPostLike,
+    addProject
 } from "../controllers/user.controller.js";
 
 
@@ -36,6 +37,11 @@ router.get("/getfollowingDevelopers/:id", protectRoute, getfollowingDevelopers)
 router.get("/getfollowers/:id", protectRoute, getfollowers)
 
 router.get("/DoPostLike/:postId/:collectionId", protectRoute, DoPostLike)
+
+
+//new
+
+router.post("/addProject",protectRoute,addProject)
 
 
 

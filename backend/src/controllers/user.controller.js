@@ -4,7 +4,8 @@ import { techStack } from '../../utils/tecStacks.js';
 import Post from '../models/post.model.js';
 import User from '../models/user.model.js';
 import cloudinary from '../lib/cloudinary.js';
-import { json } from 'stream/consumers';
+
+import Project from '../models/project.model.js';
 
 export const addpost = async (req, res) => {
   const userId = req.user._id;
@@ -613,6 +614,25 @@ export const DoPostLike = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const addProject=async (req,res)=>{
+  const userId = req.user._id
+  try {
+    const {name ,description,deadline,techStack}=req.body
+    const project = new Project({
+
+      name,
+      description,
+      owner:userId,
+      deadline,
+      techStack
+    } )
+    await project.save()
+    return res.status(200).json(name)
+  } catch (e) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+}
 
 
 
