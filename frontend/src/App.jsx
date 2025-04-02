@@ -21,6 +21,7 @@ import DevProfile from "./pages/DevProfile";
 import AddPost from "./pages/Addpost.jsx";
 import AddStory from "./pages/Addstory.jsx";
 import InteractedUsersList from "./pages/InteractedUsersList.jsx";
+import AddProject from "./pages/AddProject.jsx";
 
 
 const App = () => {
@@ -59,6 +60,7 @@ const App = () => {
         <Route path="/add-post" element={<AddPost />} />
         <Route path="/add-story" element={<AddStory />} />
         <Route path="/InteractedUsersList" element={<InteractedUsersList />} />
+        <Route path="/AddProject" element={<AddProject />} />
 
       </Routes>
 

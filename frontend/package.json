@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@react-spring/web": "^9.7.5",
-    "antd": "^5.24.4",
+    "antd": "^5.24.6",
     "axios": "^1.7.7",
     "chat-app": "file:..",
     "framer-motion": "^12.5.0",
