@@ -12,6 +12,10 @@ const projectSchema = new mongoose.Schema(
       required: [true, 'Project description is required'],
       trim: true
     },
+    image: {
+      type: String,
+      default: '',
+    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

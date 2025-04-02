@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { axiosInstance } from '../lib/axios.js';
+import toast from 'react-hot-toast';
 
 const ProjectDashboard = () => {
   const [listOpenings, setListOpenings] = useState([]);
@@ -8,6 +9,8 @@ const ProjectDashboard = () => {
     try {
       const { data } = await axiosInstance.get('/userdash/getProjectList');
       setListOpenings(data.projects);
+      console.log("data.projects",data.projects);
+      
     } catch (error) {
       console.error('Error fetching projects:', error);
     }
@@ -16,6 +19,16 @@ const ProjectDashboard = () => {
   useEffect(() => {
     fetchlist();
   }, []);
+
+  const sentReq = async (projectId) => {
+    try {
+      await axiosInstance.get(`/userdash/sendInterestRequest/${projectId}`);
+      toast.success("Request sent successfully! ");
+      fetchlist();
+    } catch (error) {
+      toast.error("Failed to send request");
+    }
+  };
 
   return (
     <div className='pt-20 h-screen bg-gray-100'>
@@ -59,7 +72,7 @@ const ProjectDashboard = () => {
               ) : project.isAlreadyContributed ? (
                 <h2 className="text-green-500">You are already in</h2>
               ) : (
-                <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition">
+                <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition"onClick={()=>sentReq(project._id)}>
                   Send Request
                 </button>
               )}

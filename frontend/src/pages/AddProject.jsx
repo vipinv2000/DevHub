@@ -12,12 +12,16 @@ const AddProject = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    image:'',
     deadline: '',
     techStack: [],
   });
 
   const [filteredOptions, setFilteredOptions] = useState([]);
   const [searchText, setSearchText] = useState('');
+  const [image, setImage] = useState(null);
+  const [previmage, setPrevImage] = useState(null);
+
 
   const handleSearch = (input) => {
     setSearchText(input);
@@ -28,6 +32,17 @@ const AddProject = () => {
     } else {
       setFilteredOptions([]);
     }
+  };
+  const handleImageChange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+      const base64Image = reader.result;
+      setImage(base64Image);
+      setPrevImage(base64Image)
+    };
   };
 
   const handleSelect = (value) => {
@@ -51,7 +66,10 @@ const AddProject = () => {
     if (!formData.deadline) return toast.error('Deadline is required!');
 
     try {
-      const response = await axiosInstance.post('/userdash/addProject', formData);
+      const finalData ={...formData,image:image}
+      console.log("Final",finalData);
+      
+      await axiosInstance.post('/userdash/addProject', finalData);
       toast.success('Project Added Successfully!');
     
        
@@ -59,6 +77,7 @@ const AddProject = () => {
       setFormData({
         name: '',
         description: '',
+        image:"",
         deadline: '',
         techStack: [],
       });
@@ -101,6 +120,22 @@ const AddProject = () => {
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
           </div>
+          <div className="flex items-center gap-4">
+      {/* File Input */}
+      <input
+        type="file"
+        accept="image/*"
+        className="p-2 border border-gray-600 rounded-lg bg-gray-700 text-white cursor-pointer"
+        onChange={handleImageChange}
+      />
+
+      {/* Image Preview */}
+      {previmage && (
+        <div className="w-32 h-20 rounded overflow-hidden border border-gray-500 shadow-lg">
+          <img src={previmage} className="w-full h-full object-cover" alt="Preview" />
+        </div>
+      )}
+    </div>
 
           {/* Deadline */}
           <div className="form-control">

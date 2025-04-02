@@ -23,6 +23,7 @@ import AddStory from "./pages/Addstory.jsx";
 import InteractedUsersList from "./pages/InteractedUsersList.jsx";
 import AddProject from "./pages/AddProject.jsx";
 import ProjectDashboard from "./pages/ProjectDashboard.jsx";
+import MyProjectDetails from "./pages/MyProjectDetails.jsx";
 
 
 const App = () => {
@@ -44,7 +45,7 @@ const App = () => {
   return (
     <div data-theme={theme} >
 
-      {!["/", "/add-story", "/add-post", "/chooseDeveloper", "/InteractedUsersList"].includes(location.pathname) &&
+      {!["/", "/add-story", "/add-post", "/chooseDeveloper", "/InteractedUsersList","/MyProjectDetails"].includes(location.pathname) &&
         !location.pathname.startsWith("/devProfile/") && <Navbar />}
 
 
@@ -63,6 +64,7 @@ const App = () => {
         <Route path="/InteractedUsersList" element={<InteractedUsersList />} />
         <Route path="/AddProject" element={<AddProject />} />
         <Route path="/ProjectDashboard" element={<ProjectDashboard />} />
+        <Route path="/MyProjectDetails" element={<MyProjectDetails />} />
 
       </Routes>
 
