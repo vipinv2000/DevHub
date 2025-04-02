@@ -628,11 +628,17 @@ export const DoPostLike = async (req, res) => {
 export const addProject = async (req, res) => {
   const userId = req.user._id
   try {
-    const { name, description, deadline, techStack } = req.body
+    const { name, description, deadline, techStack,image } = req.body
+    let imageUrl;
+    if (image) {
+      const uploadResponse = await cloudinary.uploader.upload(image);
+      imageUrl = uploadResponse.secure_url;
+    }
     const project = new Project({
 
       name,
       description,
+      image:imageUrl,
       owner: userId,
       deadline,
       techStack,
@@ -673,7 +679,8 @@ export const getProjectList = async (req, res) => {
       isAlreadyContributed: item.contributors.some(dev => dev.userId.toString() === userId.toString()),
       isAlreadyRejected: item.interestedDev.some(dev => dev.userId.toString() === userId.toString() && dev.isRejected === true)
     }));
-
+     
+     
     return res.status(200).json({ success: true, projects: updatedProjects });
 
   } catch (error) {
@@ -809,7 +816,7 @@ export const ownerMyProjects = async (req, res) => {
   const userId = req.user._id;
   try {
 
-    const ListOfMyProjects = await Project.find({owner:userId})
+    const ListOfMyProjects = await Project.find({owner:userId}) .populate("interestedDev.userId", "fullName email profilePic").populate("contributors.userId", "fullName email profilePic")
     if(ListOfMyProjects.length <= 0 ){
       return res.status(404).json({ success: false, message: "No Projects Found" });
     }
