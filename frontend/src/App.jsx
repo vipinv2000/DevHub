@@ -22,6 +22,7 @@ import AddPost from "./pages/Addpost.jsx";
 import AddStory from "./pages/Addstory.jsx";
 import InteractedUsersList from "./pages/InteractedUsersList.jsx";
 import AddProject from "./pages/AddProject.jsx";
+import ProjectDashboard from "./pages/ProjectDashboard.jsx";
 
 
 const App = () => {
@@ -61,6 +62,7 @@ const App = () => {
         <Route path="/add-story" element={<AddStory />} />
         <Route path="/InteractedUsersList" element={<InteractedUsersList />} />
         <Route path="/AddProject" element={<AddProject />} />
+        <Route path="/ProjectDashboard" element={<ProjectDashboard />} />
 
       </Routes>
 

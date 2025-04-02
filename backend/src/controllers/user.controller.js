@@ -185,8 +185,8 @@ export const acceptFollowRequest = async (req, res) => {
   const userId = req.user._id; // Logged-in user (Receiver)
   const { id, type } = req.params; // Sender's ID (User who sent the follow request)
 
-  console.log("type",type);
-  
+  console.log("type", type);
+
 
   try {
     if (type === 'following') {
@@ -200,7 +200,7 @@ export const acceptFollowRequest = async (req, res) => {
       .json({ success: true, message: 'Follow request accepted!' });
   } catch (error) {
     console.log(error);
-    
+
     return res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -415,11 +415,13 @@ export const searchtecStack = (req, res) => {
 export const getDeveloperProfile = async (req, res) => {
   let { devId } = req.params;
   const userId = req.user._id;
-  console.log("dev",devId);
-  
+
   try {
 
-    if(devId=="myProfile") devId=userId
+    if (devId === "myProfile") {
+      devId = userId;
+    }
+
     let postsWithLikeStatus = [];
 
 
@@ -450,24 +452,32 @@ export const getDeveloperProfile = async (req, res) => {
       }));
     }
 
-    console.log("Developer Data:", postData);
+    // console.log("Developer Data:", postData);
 
     const followingCount = userData.action?.filter(
       (item) => item.follow === "pending" || item.follow === "following"
     ).length || 0;
 
-    console.log("Following Count:", followingCount);
+    console.log("Following Count: ", followingCount);
 
-    const followersCount = await User.countDocuments({
-      "action.userId": devId,
-      "action.follow": { $in: ["following", "requested"] }
+    let followersCount = await User.countDocuments({
+      _id: { $ne: devId },  // Exclude the document where _id === devId
+      "action": {
+        $elemMatch: {
+          userId: devId,
+          follow: { $in: ["following", "pending"] }
+        }
+      }
     });
 
-    console.log("Followers Count:", followersCount);
+    console.log("Followers Count: Azad", followersCount, devId);
+
+
+
     var requestUserStatus = userData?.action
       ?.find(item => item.userId.toString() === userId.toString())?.follow || 'sendRequest';
 
-    console.log("requestUserStatus:", requestUserStatus);
+    //console.log("requestUserStatus:", requestUserStatus);
 
 
 
@@ -517,10 +527,11 @@ export const getAccountInteractions = async (req, res) => {
 }
 
 export const getfollowingDevelopers = async (req, res) => {
-  const { id } = req.params;
+  let { id } = req.params;
   const userId = req.user._id
   try {
 
+    if (id == "myProfile") id = userId
     const Useres = await User.findOne({ _id: id }).populate("action.userId")
 
     const GetFollwingdev = Useres.action.filter(item => (
@@ -538,37 +549,36 @@ export const getfollowingDevelopers = async (req, res) => {
 }
 
 export const getfollowers = async (req, res) => {
-  const { id } = req.params;  // The user whose followers we need
+  let { id } = req.params;  // The user whose followers we need
   const userId = req.user._id
   try {
+
+    if (id == "myProfile") id = userId
     console.log("User ID:", id);
 
     // Fetch all users
-    const allUsers = await User.find({}, "-password  -field")
+
 
     // Find users who have sent a follow request to the given user
-    const followers = [];
-    const filterfollowers = []
 
-    allUsers.forEach(item => {
-      item.action.forEach(actionItem => {
-        if (actionItem.userId.toString() === id && actionItem.userId.toString() != userId.toString()) {
-          followers.push(item);
+
+
+    let followers = await User.find(
+      {
+        _id: { $ne: id }, // Exclude the document where _id === devId
+        "action": {
+          $elemMatch: {
+            userId: id,
+            follow: { $in: ["following", "pending"] }
+          }
         }
-      });
-    });
-
-    followers.forEach(item => {
-      item.action.forEach(actionItem => {
-        if (actionItem.follow === "following" || actionItem.follow === "requested") {
-          filterfollowers.push(item);
-        }
-      });
-    });
+      }
+    );
 
 
 
-    console.log("Followers:", filterfollowers);
+
+    console.log("Followers: ##########", followers);
 
     return res.status(200).json({ success: true, followers });
 
@@ -615,25 +625,203 @@ export const DoPostLike = async (req, res) => {
   }
 };
 
-export const addProject=async (req,res)=>{
+export const addProject = async (req, res) => {
   const userId = req.user._id
   try {
-    const {name ,description,deadline,techStack}=req.body
+    const { name, description, deadline, techStack } = req.body
     const project = new Project({
 
       name,
       description,
-      owner:userId,
+      owner: userId,
       deadline,
       techStack
-    } )
+    })
     await project.save()
     return res.status(200).json(name)
-  } catch (e) {
+  } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 }
 
+export const getProjectList = async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const userData = await User.findById(userId);
+    if (!userData) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const userSkills = userData.field;
+
+    const matchedProjects = await Project.find({
+      owner: { $ne: userId },
+      techStack: { $in: userSkills },
+    }).populate("owner", "-password -field -action");
+
+    const updatedProjects = matchedProjects.map((item) => ({
+      ...item.toObject(),
+      isAlreadyRequested: item.interestedDev.some(dev => dev.userId.toString() === userId.toString()),
+      isAlreadyContributed: item.contributors.some(dev => dev.userId.toString() === userId.toString()),
+      isAlreadyRejected: item.interestedDev.some(dev => dev.userId.toString() === userId.toString() && dev.isRejected === true)
+    }));
+     
+     
+    return res.status(200).json({ success: true, projects: updatedProjects });
+
+  } catch (error) {
+    console.error("Error in getProjectList:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
+export const sendInterestRequest = async (req, res) => {
+  const userId = req.user._id;
+  const { projectId } = req.params;
+
+  try {
+    console.log(`Interest request called for user: ${userId}, project: ${projectId}`);
+
+    const selectedProject = await Project.findById(projectId);
+    if (!selectedProject) {
+      return res.status(404).json({ success: false, message: "Project not found" });
+    }
+
+    const alreadyInterestedDev = selectedProject.interestedDev.findIndex(
+      (item) => item.userId.toString() === userId.toString()
+    );
+
+    if (alreadyInterestedDev !== -1) {
+      return res.status(400).json({ success: false, message: "You have already requested to join this project" });
+    }
+
+    const alreadyContributor = selectedProject.contributors.findIndex(
+      (item) => item.userId.toString() === userId.toString()
+    );
+
+    if (alreadyContributor !== -1) {
+      return res.status(400).json({ success: false, message: "You are already a part of this project" });
+    }
+
+    selectedProject.interestedDev.push({
+      userId: userId,
+      DateTime: new Date(),
+      isRejected: false
+    });
+
+    await selectedProject.save();
+
+    return res.status(200).json({ success: true, message: "Interest request sent successfully" });
+
+  } catch (error) {
+    console.error("Error in sendInterestRequest:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const InterestRequestReject = async (req, res) => {
+  const userId = req.user._id;
+  const { devId } = req.params;
+
+  try {
+    const OwnerProject = await Project.findOne({ owner: userId });
+
+    if (!OwnerProject) {
+      return res.status(400).json({ success: false, message: "No Project Found" });
+    }
+
+    const FindDevIndex = OwnerProject.interestedDev.findIndex(
+      (item) => item.userId.toString() === devId.toString() && item.isRejected === false
+    );
+
+    if (FindDevIndex === -1) {
+      return res.status(404).json({ success: false, message: "Developer not found or already rejected" });
+    }
+
+    OwnerProject.interestedDev[FindDevIndex].isRejected = true;
+
+    await OwnerProject.save();
+
+    return res.status(200).json({ success: true, message: "Rejected Developer Successfully" });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const InterestRequestAccept = async (req, res) => {
+  const userId = req.user._id;
+  const { devId } = req.params;
+
+  try {
+    const OwnerProject = await Project.findOne({ owner: userId });
+
+    if (!OwnerProject) {
+      return res.status(400).json({ success: false, message: "No Project Found" });
+    }
+
+    const FindIndexContributors = OwnerProject.contributors.findIndex(
+      (item) => item.userId.toString() === devId.toString()
+    );
+
+    if (FindIndexContributors !== -1) {
+      return res.status(400).json({ success: false, message: "User Already In The Group" });
+    }
+
+    const FindDevIndex = OwnerProject.interestedDev.findIndex(
+      (item) => item.userId.toString() === devId.toString() && item.isRejected === false
+    );
+
+    if (FindDevIndex === -1) {
+      return res.status(404).json({ success: false, message: "User Not Found in Interested List or Rejected User" });
+    }
 
 
 
+    OwnerProject.contributors.push({
+      userId: OwnerProject.interestedDev[FindDevIndex].userId,
+      DateTime: new Date(),
+      moduleSubmissions: []
+    });
+
+
+    OwnerProject.interestedDev.splice(FindDevIndex, 1);
+    await OwnerProject.save();
+
+    return res.status(200).json({ success: true, message: "Developer Accepted Successfully" });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const ownerMyProjects = async (req, res) => {
+  const userId = req.user._id;
+  try {
+
+    const ListOfMyProjects = await Project.find({owner:userId})
+    if(ListOfMyProjects.length <= 0 ){
+      return res.status(404).json({ success: false, message: "No Projects Found" });
+    }
+
+    const Updated_List = ListOfMyProjects.map((item)=>({
+        ...item.toObject(),
+        interestedDev:item.interestedDev.filter(dev=>dev.isRejected === false)
+    }))
+
+    if(Updated_List.length <= 0 ){
+      return res.status(404).json({ success: false, message: "No Projects Found or No new Requests Found" });
+    }
+
+    return res.status(200).json({ success: true, Updated_List });
+
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+}

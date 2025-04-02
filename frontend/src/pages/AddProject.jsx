@@ -4,6 +4,7 @@ import { Select } from 'antd';
 import toast from 'react-hot-toast';
 import { axiosInstance } from '../lib/axios';
 import { techStack } from '../../../backend/utils/tecStacks';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -40,6 +41,8 @@ const AddProject = () => {
     setFilteredOptions([]); // Close dropdown
   };
 
+  const navigate=useNavigate()
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -50,15 +53,16 @@ const AddProject = () => {
     try {
       const response = await axiosInstance.post('/userdash/addProject', formData);
       toast.success('Project Added Successfully!');
-      console.log('Project Added:', response.data);
-
-      // Reset Form
+    
+       
+  
       setFormData({
         name: '',
         description: '',
         deadline: '',
         techStack: [],
       });
+      navigate('/ProjectDashboard')
     } catch (error) {
       toast.error('Error adding project!');
       console.error('Error:', error.response?.data?.message || error.message);
