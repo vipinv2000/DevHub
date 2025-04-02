@@ -45,6 +45,10 @@ const projectSchema = new mongoose.Schema(
           DateTime: {
             type: Date,
             default: () => new Date()
+          },
+          isRejected:{
+            type: Boolean,
+            default: false
           }
         }
       ],

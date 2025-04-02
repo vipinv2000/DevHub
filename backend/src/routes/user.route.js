@@ -6,7 +6,8 @@ import {
     acceptFollowRequest, addpost, getFeedPosts, getPendingRequests, requestFollow,
     getDevelopers, searchtecStack, addStory, getStory, getDeveloperProfile,
     getAccountInteractions, getfollowingDevelopers, getfollowers, DoPostLike,
-    addProject
+    addProject, getProjectList, sendInterestRequest, InterestRequestReject, InterestRequestAccept,
+    ownerMyProjects
 } from "../controllers/user.controller.js";
 
 
@@ -41,7 +42,12 @@ router.get("/DoPostLike/:postId/:collectionId", protectRoute, DoPostLike)
 
 //new
 
-router.post("/addProject",protectRoute,addProject)
+router.post("/addProject", protectRoute, addProject)
+router.get("/getProjectList", protectRoute, getProjectList)
+router.get("/sendInterestRequest/:projectId", protectRoute, sendInterestRequest)
+router.get("/InterestRequestReject/:devId", protectRoute, InterestRequestReject)
+router.get("/InterestRequestAccept/:devId", protectRoute, InterestRequestAccept)
+router.get("/ownerMyProjects",protectRoute,ownerMyProjects)
 
 
 
