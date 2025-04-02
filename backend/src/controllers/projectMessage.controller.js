@@ -98,7 +98,9 @@ export const getProjectMessages = async (req, res) => {
             return res.status(403).json({ success: false, message: "You are not authorized to read messages" });
         }
 
-        const messages = await ProjectMessage.findOne({ groupId: projectId }).lean();
+        const messages = await ProjectMessage.findOne({ groupId: projectId })
+        .populate("messages.senderId", "fullName email profilePic"); // Populate sender details
+    
 
         if (!messages) {
             return res.status(404).json({ success: false, message: "No messages found for this group" });

@@ -24,6 +24,7 @@ import InteractedUsersList from "./pages/InteractedUsersList.jsx";
 import AddProject from "./pages/AddProject.jsx";
 import ProjectDashboard from "./pages/ProjectDashboard.jsx";
 import MyProjectDetails from "./pages/MyProjectDetails.jsx";
+import DevHubRoot from "./devHub/DevHubRoot.jsx";
 
 
 const App = () => {
@@ -46,7 +47,7 @@ const App = () => {
     <div data-theme={theme} >
 
       {!["/", "/add-story", "/add-post", "/chooseDeveloper", "/InteractedUsersList","/MyProjectDetails"].includes(location.pathname) &&
-        !location.pathname.startsWith("/devProfile/") && <Navbar />}
+        !location.pathname.startsWith("/devProfile/") &&  !location.pathname.startsWith("/devhub/") && <Navbar />}
 
 
 
@@ -62,9 +63,13 @@ const App = () => {
         <Route path="/add-post" element={<AddPost />} />
         <Route path="/add-story" element={<AddStory />} />
         <Route path="/InteractedUsersList" element={<InteractedUsersList />} />
-        <Route path="/AddProject" element={<AddProject />} />
-        <Route path="/ProjectDashboard" element={<ProjectDashboard />} />
-        <Route path="/MyProjectDetails" element={<MyProjectDetails />} />
+
+        <Route path="/devhub" element={<DevHubRoot />}>
+          <Route path="AddProject" element={<AddProject />} />
+          <Route path="ProjectDashboard" element={<ProjectDashboard />} />
+          <Route path="MyProjectDetails" element={<MyProjectDetails />} />
+        </Route>
+      
 
       </Routes>
 
