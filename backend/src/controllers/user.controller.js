@@ -635,7 +635,14 @@ export const addProject = async (req, res) => {
       description,
       owner: userId,
       deadline,
-      techStack
+      techStack,
+      contributors:[
+        {
+          userId:userId,
+          DateTime:new Date(),
+          isOwner:true
+        }
+      ]
     })
     await project.save()
     return res.status(200).json(name)
