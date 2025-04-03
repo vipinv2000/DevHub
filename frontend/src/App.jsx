@@ -46,8 +46,10 @@ const App = () => {
   return (
     <div data-theme={theme} >
 
-      {!["/", "/add-story", "/add-post", "/chooseDeveloper", "/InteractedUsersList","/MyProjectDetails"].includes(location.pathname) &&
-        !location.pathname.startsWith("/devProfile/") &&  !location.pathname.startsWith("/devhub/") && <Navbar />}
+{!["/", "/add-story", "/add-post", "/chooseDeveloper", "/InteractedUsersList", "/MyProjectDetails","/devhub"].includes(location.pathname) &&
+    !location.pathname.startsWith("/devProfile/") &&
+    !location.pathname.startsWith("/devhub") && <Navbar />}
+
 
 
 
@@ -65,8 +67,8 @@ const App = () => {
         <Route path="/InteractedUsersList" element={<InteractedUsersList />} />
 
         <Route path="/devhub" element={<DevHubRoot />}>
+          <Route index  element={<ProjectDashboard />} />
           <Route path="AddProject" element={<AddProject />} />
-          <Route path="ProjectDashboard" element={<ProjectDashboard />} />
           <Route path="MyProjectDetails" element={<MyProjectDetails />} />
         </Route>
       

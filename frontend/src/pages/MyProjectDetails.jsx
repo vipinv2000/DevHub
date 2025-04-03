@@ -149,7 +149,7 @@ const MyProjectDetails = () => {
                           key={dev._id}
                           className="border rounded-lg p-4 flex items-center justify-between"
                         >
-                          <div className="flex gap-6">
+                          <div className="flex gap-6 items-center">
                             <div>
                               {' '}
                               <img
@@ -160,7 +160,7 @@ const MyProjectDetails = () => {
                             </div>
                             <div>
                               <p className="font-medium text-gray-900">
-                                {dev.userId.name}
+                                {dev.userId.fullName}
                               </p>
                               <p className="text-sm text-gray-500">
                                 {dev.userId.email}

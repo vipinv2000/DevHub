@@ -9,7 +9,7 @@ const DevHubNavbar = () => {
   console.log("isMenuactive isMenuactive",isMenuactive);
   
   return (
-    <header className="fixed w-full z-10 bg-white text-black">
+    <header className="fixed w-full z-10 bg-gray-800 text-white">
       <div className="flex items-center justify-between py-1 px-5 w-full">
 
         {/* Menu Button & Logo */}
