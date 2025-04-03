@@ -4,7 +4,7 @@ const projectMessageSchema = new mongoose.Schema(
     {
         groupId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Group",
+            ref: "Project",
             required: true,
         },
         messages: [

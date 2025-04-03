@@ -25,6 +25,8 @@ import AddProject from "./pages/AddProject.jsx";
 import ProjectDashboard from "./pages/ProjectDashboard.jsx";
 import MyProjectDetails from "./pages/MyProjectDetails.jsx";
 import DevHubRoot from "./devHub/DevHubRoot.jsx";
+import ProjectGroupSidebar from "./devHub/ProjectGroupSidebar.jsx";
+import ChatGroupRoot from "./devHub/ChatGroupRoot.jsx";
 
 
 const App = () => {
@@ -70,6 +72,8 @@ const App = () => {
           <Route index  element={<ProjectDashboard />} />
           <Route path="AddProject" element={<AddProject />} />
           <Route path="MyProjectDetails" element={<MyProjectDetails />} />
+          <Route path="ChatGroupRoot" element={<ChatGroupRoot />} />
+
         </Route>
       
 

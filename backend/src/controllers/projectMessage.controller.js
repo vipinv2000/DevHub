@@ -9,7 +9,7 @@ export const getGroupsForSidebar = async (req, res) => {
         const loggedInUserId = req.user._id;
         console.log("loggedInUserId", loggedInUserId);
 
-        const filteredUsers = await Project.find({
+        const ProjectGroup = await Project.find({
             "contributors": {
                 $elemMatch: {
                     userId: loggedInUserId,
@@ -17,7 +17,7 @@ export const getGroupsForSidebar = async (req, res) => {
             }
         }).select('-interestedDev');
 
-        res.status(200).json({ success: true, filteredUsers });
+        res.status(200).json({ success: true, ProjectGroup });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ success: false, message: "Internal server error" });
@@ -85,10 +85,14 @@ export const sendProjectMessage = async (req, res) => {
 
 export const getProjectMessages = async (req, res) => {
     try {
+        console.log("pId",req.params);
+        
         const userId = req.user._id;
         const { projectId } = req.params;
 
         const project = await Project.findById(projectId);
+        console.log(project);
+        
         if (!project) {
             return res.status(404).json({ success: false, message: "Project not found" });
         }
@@ -98,16 +102,17 @@ export const getProjectMessages = async (req, res) => {
             return res.status(403).json({ success: false, message: "You are not authorized to read messages" });
         }
 
-        const messages = await ProjectMessage.findOne({ groupId: projectId })
-        .populate("messages.senderId", "fullName email profilePic"); // Populate sender details
+        const chat = await ProjectMessage.findOne({ groupId: projectId })
+        .populate("messages.senderId", "fullName email profilePic");
     
-
-        if (!messages) {
-            return res.status(404).json({ success: false, message: "No messages found for this group" });
-        }
-
-        res.status(200).json({ success: true, data: messages });
-
+    console.log("Fetched messages:", chat);
+    
+    if (!chat || (chat?.messages && chat?.messages.length === 0)) {
+        return res.status(200).json({ success: true, chat: [] }); // Empty messages case
+    }
+    
+    res.status(200).json({ success: true, chat });
+    
     } catch (error) {
         console.error("Error in getProjectMessages controller:", error.message);
         res.status(500).json({ success: false, error: "Internal server error" });

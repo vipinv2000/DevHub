@@ -8,7 +8,7 @@ const DevHubRoot = () => {
   const { isMenuactive } = userSidebar();
 
   return (
-    <div>
+    <div className="">
       <DevHubNavbar />
       <div className="flex pt-20 h-screen">
         <div className={`${isMenuactive ? "w-[5%]" : "w-[15%]"} transition-all duration-300 -mt-2 `}>

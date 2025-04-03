@@ -23,7 +23,7 @@ const DevHubSidebar = () => {
   { name: "My Projects", icon: FolderKanban, id: "My Projects", path: "/devhub/MyProjectDetails" }, 
   { name: "Project Feed", icon: Rss, id: "Project Feed", path: "/devhub" }, 
   { name: "Community", icon: Users, id: "Community", path: "devhub/AddProject" }, 
-  { name: "Settings", icon: Settings, id: "settings", path: "/settings" } 
+  { name: "Settings", icon: Settings, id: "settings", path: "/devhub/ChatGroupRoot" } 
 ]
 .map((item) => (
           <button
