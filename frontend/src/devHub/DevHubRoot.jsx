@@ -8,15 +8,24 @@ const DevHubRoot = () => {
   const { isMenuactive } = userSidebar();
 
   return (
-    <div className="">
-      <DevHubNavbar />
-      <div className="flex pt-20 h-screen">
-        <div className={`${isMenuactive ? "w-[5%]" : "w-[15%]"} transition-all duration-300 -mt-2 `}>
+    <div className="h-screen flex flex-col">
+      {/* Navbar - Fixed at the top */}
+      <div className="fixed top-0 left-0 w-full z-50">
+        <DevHubNavbar />
+      </div>
+
+      {/* Sidebar & Outlet Container */}
+      <div className="flex flex-grow pt-16">
+        {/* Sidebar - Fixed on the left */}
+        <div className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-gray-800 text-white transition-all duration-300 ${isMenuactive ? "w-[5%]" : "w-[15%]"}`}>
           <DevHubSidebar />
         </div>
-        <div className={`${isMenuactive ? "w-[95%] -ml-5" : "w-[100%]"} transition-all duration-300  `}>
-          <Outlet />
-        </div>
+
+        {/* Outlet - Scrollable Content */}
+        <div className={`ml-auto ${isMenuactive ? "w-[95%]" : "w-[85%]"} h-[calc(100vh-4rem)] overflow-hidden`}>
+  <Outlet />
+</div>
+
       </div>
     </div>
   );

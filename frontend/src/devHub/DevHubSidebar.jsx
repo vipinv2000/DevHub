@@ -6,14 +6,14 @@ import { useAuthStore } from "../store/useAuthStore";
 
 const DevHubSidebar = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("home");
+  const [activeTab, setActiveTab] = useState("Project Feed");
   const { isMenuactive } = userSidebar();
    const { logout} = useAuthStore();
 
   return (
     <div
       className={`bg-gray-800 text-white transition-all duration-300 ${
-        isMenuactive ? "w-16" : "w-64"
+        isMenuactive ? "w-16" : "w-58"
       } h-full  flex-col py-4 flex flex-grow `}
     >
       <nav className="w-full">
@@ -26,21 +26,23 @@ const DevHubSidebar = () => {
   { name: "Settings", icon: Settings, id: "settings", path: "/devhub/ChatGroupRoot" } 
 ]
 .map((item) => (
-          <button
-            key={item.id}
-            onClick={() => {
-              setActiveTab(item.id);
-              navigate(item.path);
-            }}
-            className={`hover:bg-gray-700 rounded-lg w-full flex items-center px-4 py-3 text-gray-200 transition-all ${
-              activeTab === item.id ? "bg-gray-700 text-white font-medium" : ""
-            } ${isMenuactive ? "justify-center" : "justify-start"}`}
-          >
-            <item.icon className="h-6 w-6" />
-            <span className={`ml-3 transition-all ${isMenuactive ? "hidden" : "block"}`}>
-              {item.name}
-            </span>
-          </button>
+  <button
+  key={item.id}
+  onClick={() => {
+    setActiveTab(item.id);
+    navigate(item.path);
+  }}
+  className={`w-full flex items-center px-4 py-3 rounded-lg transition-all 
+    ${activeTab === item.id ? "bg-gray-700 text-white font-medium" : "hover:bg-gray-700 text-gray-200"}
+    ${isMenuactive ? "justify-center" : "justify-start"}`}
+  style={{ width: "100%" }} // Ensures full width
+>
+  <item.icon className="h-6 w-6" />
+  <span className={`ml-3 transition-all ${isMenuactive ? "hidden" : "block"}`}>
+    {item.name}
+  </span>
+</button>
+
         ))}
       </nav>
 

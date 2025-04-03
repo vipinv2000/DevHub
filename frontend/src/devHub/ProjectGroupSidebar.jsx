@@ -53,7 +53,7 @@ const ProjectGroupSidebar = () => {
         ))}
 
 {projectGroup.length === 0 && (
-          <div className="text-center text-zinc-500 py-4">No online users</div>
+          <div className="text-center text-zinc-500 py-4">No Groups </div>
         )}
       </div>
     </aside>

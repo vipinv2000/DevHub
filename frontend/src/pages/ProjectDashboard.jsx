@@ -9,8 +9,7 @@ const ProjectDashboard = () => {
     try {
       const { data } = await axiosInstance.get('/userdash/getProjectList');
       setListOpenings(data.projects);
-      console.log("data.projects",data.projects);
-      
+      console.log("data.projects", data.projects);
     } catch (error) {
       console.error('Error fetching projects:', error);
     }
@@ -23,60 +22,58 @@ const ProjectDashboard = () => {
   const sentReq = async (projectId) => {
     try {
       await axiosInstance.get(`/userdash/sendInterestRequest/${projectId}`);
-      toast.success("Request sent successfully! ");
+      toast.success("Request sent successfully!");
       fetchlist();
     } catch (error) {
       toast.error("Failed to send request");
     }
   };
 
-  return (
-    <div className='pt-20 h-screen bg-gray-100'>
-      <h1 className="text-2xl font-bold mb-4">Openings</h1>
-      <div  
-        style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-          gap: '20px' 
-        }}
-      >
-        {listOpenings.map((project) => (
-          <div  
-            key={project._id} 
-            className="border p-1 rounded-lg shadow-lg"
-            style={{ borderColor: '#ddd' }}
-          >
-            <div 
-              className={`${project.isAlreadyRejected ? 'opacity-30' : ''}`} // Fades rejected projects
-              style={{ 
-                border: '1px solid rgba(255, 255, 255, 0.2)', 
-                borderRadius: '10px', 
-                padding: '20px', 
-                boxShadow: '2px 2px 10px rgba(0,0,0,0.1)',
-                backdropFilter: 'blur(10px)', // Blurred effect inside card
-                background: 'rgba(255, 255, 255, 0.2)', // Light translucent background
-              }}
-            >
-              <h2 className="text-lg font-semibold">{project.name}</h2>
-              <p>{project.description}</p>
-              <p><strong>Status:</strong> {project.status}</p>
-              <p><strong>Deadline:</strong> {new Date(project.deadline).toDateString()}</p>
-              <p><strong>Tech Stack:</strong> {project.techStack.join(', ')}</p>
-              <p><strong>Owner:</strong> {project.owner.fullName}</p>
+  const handleMessage = (projectId) => {
+    // Functionality to open messaging for the project
+    console.log("Opening messages for project:", projectId);
+    toast.success("Opening chat...");
+  };
 
-              {/* ✅ Fixed Conditional Rendering */}
-              {project.isAlreadyRejected ? (
-                <h2 className="text-red-500">Your request is rejected</h2>
-              ) : project.isAlreadyRequested ? (
-                <h2 className="text-blue-500">You already requested</h2>
-              ) : project.isAlreadyContributed ? (
-                <h2 className="text-green-500">You are already in</h2>
-              ) : (
-                <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition"onClick={()=>sentReq(project._id)}>
-                  Send Request
+  return (
+    <div className='pt-5 max-h-screen bg-white p-6 overflow-auto'>
+     
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {listOpenings.map((project) => (
+          <div
+            key={project._id}
+            className={`relative p-5 rounded-xl shadow-xl transition-transform transform hover:scale-[1.02] ${project.isAlreadyRejected ? 'opacity-50' : 'bg-white bg-opacity-40 backdrop-blur-lg border border-white'}`}
+          >
+            <h2 className="text-xl font-bold text-gray-900 mb-2">{project.name}</h2>
+            <p className="text-gray-600 line-clamp-3 mb-2">{project.description}</p>
+            <p className="text-gray-600"><strong>Status:</strong> {project.status}</p>
+            <p className="text-gray-600"><strong>Deadline:</strong> {new Date(project.deadline).toDateString()}</p>
+            <p className="text-gray-600"><strong>Tech Stack:</strong> {project.techStack.join(', ')}</p>
+            <p className="text-gray-600"><strong>Owner:</strong> {project.owner.fullName}</p>
+
+            {/* Status Messages & Buttons */}
+            {project.isAlreadyRejected ? (
+              <h2 className="text-red-600 font-bold mt-2">Your request is rejected</h2>
+            ) : project.isAlreadyRequested ? (
+              <h2 className="text-blue-600 font-bold mt-2">You already requested</h2>
+            ) : project.isAlreadyContributed ? (
+              <>
+                <h2 className="text-green-600 font-bold mt-2">You are already in</h2>
+                <button
+                  className="mt-4 w-full py-2 bg-green-500 text-white rounded-lg font-semibold shadow-md hover:bg-green-700 transition"
+                  onClick={() => handleMessage(project._id)}
+                >
+                  Message
                 </button>
-              )}
-            </div>
+              </>
+            ) : (
+              <button
+                className="mt-4 w-full py-2 bg-blue-500 text-white rounded-lg font-semibold shadow-md hover:bg-blue-700 transition"
+                onClick={() => sentReq(project._id)}
+              >
+                Send Request
+              </button>
+            )}
           </div>
         ))}
       </div>
