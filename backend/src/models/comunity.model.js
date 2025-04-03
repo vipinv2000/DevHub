@@ -64,6 +64,36 @@ const comunitySchema = new mongoose.Schema(
                 },
             ],
             default: []
+        },
+        posts: {
+            type: [
+                {
+                    senderId: {
+                        type: mongoose.Schema.Types.ObjectId,
+                        ref: "User",
+                        required: true,
+                    },
+                    name: {
+                        type: String,
+                    },
+                    image: {
+                        type: String,
+                    },
+                    createdAt: {
+                        type: Date,
+                        default: Date.now,
+                    },
+                    description: {
+                        type: String,
+                        default: false
+                    },
+                    link: {
+                        type: String,
+                        default: false
+                    }
+                },
+            ],
+            default: []
         }
     },
     { timestamps: true }

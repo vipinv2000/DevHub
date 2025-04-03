@@ -3,6 +3,7 @@ import ProjectMessage from "../models/projectMessage.model.js";
 
 import { getReceiverSocketId, io } from '../lib/socket.js';
 import cloudinary from "../lib/cloudinary.js";
+import User from "../models/user.model.js";
 
 export const getGroupsForSidebar = async (req, res) => {
     try {
@@ -30,6 +31,7 @@ export const sendProjectMessage = async (req, res) => {
         const { projectId } = req.params;
         const senderId = req.user._id;
 
+        const senderUser = await User.findOne({ _id: senderId }).select("_id fullName profilePic"); 
         const projectDetails = await Project.findById(projectId);
         if (!projectDetails) {
             return res.status(404).json({ success: false, message: "Project Group Not Found!" });
@@ -52,7 +54,7 @@ export const sendProjectMessage = async (req, res) => {
         }
 
         const groupList = await ProjectMessage.findOne({ groupId: projectId });
-        const sendingMessage = {
+        let sendingMessage = {
             senderId: senderId,
             text,
             image: imageUrl,
@@ -69,6 +71,14 @@ export const sendProjectMessage = async (req, res) => {
                 messages: [sendingMessage]
             });
             await newProjectMessage.save();
+        }
+
+        sendingMessage={
+            senderId: senderUser,
+            text,
+            image: imageUrl,
+            createdAt: new Date(),
+            isOwner: projectDetails.owner.toString() === senderId.toString()
         }
 
         const receiverSocketId = getReceiverSocketId(projectId);
@@ -108,7 +118,8 @@ export const getProjectMessages = async (req, res) => {
     console.log("Fetched messages:", chat);
     
     if (!chat || (chat?.messages && chat?.messages.length === 0)) {
-        return res.status(200).json({ success: true, chat: [] }); // Empty messages case
+        return res.status(200).json({ success: true, "chat.messages": [] });
+        //return res.status(401).json({ success: false, message:"There Is No Group Exist" });
     }
     
     res.status(200).json({ success: true, chat });

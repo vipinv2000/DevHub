@@ -1,40 +1,46 @@
 import { useEffect, useRef } from "react";
-import ChatHeader from "../components/ChatHeader";
-import MessageInput from "../components/MessageInput";
-import { formatMessageTime } from "../lib/utils";
-import ProjectgroupChatHeader from "./ProjectgroupChatHeader.jsx";
 import { ProjectGroupSidebarFunction } from "../store/projectGroupStore.js";
 import { useAuthStore } from "../store/useAuthStore.js";
+import ProjectgroupChatHeader from "./ProjectgroupChatHeader.jsx";
+import ProjectMessageInput from "./ProjectMessageInput.jsx";
+import { formatMessageTime } from "../lib/utils";
 
-const   ProjectChatContainer = () => {
-
+const ProjectChatContainer = () => {
   const messageEndRef = useRef(null);
 
-const { projectMessages } = ProjectGroupSidebarFunction();
- const { authUser } = useAuthStore();
+  const { projectMessages, selectedProjectGroup, getProjectMessages, subscribeToProjectMessages } = ProjectGroupSidebarFunction();
+  const { authUser } = useAuthStore();
 
- 
+  useEffect(() => {
+    if (selectedProjectGroup?._id) {
+      getProjectMessages(selectedProjectGroup._id);
+      subscribeToProjectMessages();
+    }
+  }, [selectedProjectGroup?._id, getProjectMessages]);
+
+  useEffect(() => {
+    if (messageEndRef.current && projectMessages) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [projectMessages]);
+  console.log("getProjectMessages", projectMessages);
+
 
   return (
-    <div className="flex-1 flex flex-col overflow-auto  h-screen pb-20 ">
+    <div className="flex-1 flex flex-col overflow-auto h-screen pb-20">
       <ProjectgroupChatHeader />
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {projectMessages && projectMessages.messages &&projectMessages.messages.map((message) => (
+        {projectMessages?.map((message, index) => (
           <div
-            key={message._id}
+            key={index}
             className={`chat ${message?.senderId?._id === authUser._id ? "chat-end" : "chat-start"}`}
             ref={messageEndRef}
           >
-            <div className=" chat-image avatar">
-              <div className="size-10 rounded-full border">
-               
+            <div className="chat-image avatar">
+              <div className="size-10 rounded-full border ">
                 <img
-                  src={
-                    message.senderId === authUser._id
-                      ? authUser.profilePic || "/avatar.png"
-                      : "/avatar.png"
-                  }
+                  src={message.senderId?._id === authUser._id ? authUser.profilePic || "/avatar.png" : "/avatar.png"}
                   alt="profile pic"
                 />
               </div>
@@ -45,12 +51,17 @@ const { projectMessages } = ProjectGroupSidebarFunction();
               </time>
             </div>
             <div className="chat-bubble flex flex-col">
+              <p className="text-xs text-base-content/70 italic font-extrabold">
+                {message?.senderId?._id === authUser._id ? "You" : message?.senderId?.fullName}
+                {'\u00A0\u00A0'}
+                {message?.isOwner ? "(Admin)" : ""}
+              </p>
+
+
+
+
               {message.image && (
-                <img
-                  src={message.image}
-                  alt="Attachment"
-                  className="sm:max-w-[200px] rounded-md mb-2"
-                />
+                <img src={message.image} alt="Attachment" className="sm:max-w-[200px] rounded-md mb-2" />
               )}
               {message.text && <p>{message.text}</p>}
             </div>
@@ -58,7 +69,7 @@ const { projectMessages } = ProjectGroupSidebarFunction();
         ))}
       </div>
 
-      <MessageInput />
+      <ProjectMessageInput />
     </div>
   );
 };

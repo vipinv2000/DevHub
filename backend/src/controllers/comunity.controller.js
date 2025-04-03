@@ -21,6 +21,7 @@ export const createCommunity = async (req, res) => {
             name,
             description,
             image: imageUrl,
+            owner:userId,
             Members: [{
                 userId: userId,
                 isOwner: true  // Ensure your schema includes this field.
@@ -34,8 +35,6 @@ export const createCommunity = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
-
-
 
 export const joinCommunity = async (req, res) => {
     try {
@@ -68,3 +67,23 @@ export const joinCommunity = async (req, res) => {
     }
 };
 
+export const listComunity = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const ListOfComunityes = await Comunity.find({});
+
+        const UpdatedCommunity = ListOfComunityes.map((comunity) => (
+            {
+                ...comunity.toObject(),
+                alreadyIn : comunity.Members.some(user=>user.userId.toString === userId.toString())
+            }
+        ))
+        console.log("OrgCommunit",UpdatedCommunity);
+        
+        return res.status(200).json({success:true,UpdatedCommunity})
+
+    } catch (error) {
+        console.error('Error in joinCommunity:', error.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}

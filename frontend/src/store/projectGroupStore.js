@@ -1,47 +1,80 @@
 import toast from 'react-hot-toast';
 import { create } from 'zustand';
 import { axiosInstance } from '../lib/axios';
-export const ProjectGroupSidebarFunction = create(set => ({
+import { io } from "socket.io-client"; 
+
+// Initialize socket
+const socket = io("http://localhost:5000", {
+  transports: ["websocket"],
+});
+
+export const ProjectGroupSidebarFunction = create((set, get) => ({
   projectGroup: [],
   projectMessages: null,
+  selectedProjectGroup: null,
+
   getProjectGroup: async () => {
     try {
       const res = await axiosInstance.get('/projectMessage/projectGroup');
       console.log('res', res.data.ProjectGroup);
-
       set({ projectGroup: res.data?.ProjectGroup });
     } catch (error) {
-      // toast.error(error.message);
       toast.error(error.message);
     }
   },
-  setSelectedProgectGroup: selectedProjectGroup => {
-    console.log(selectedProjectGroup);
-    set({ selectedProjectGroup });
-  },
-  getProjectMessages: async projectId => {
-    try {
-      console.log('projectId', projectId);
 
-      const res = await axiosInstance.get(
-        `/projectMessage/getProjectMessages/${projectId}`
-      );
-      set({ projectMessages: res.data?.chat });
-      console.log('mmmmmmmmmm', res.data.chat);
+  setSelectedProjectGroup: (selectedProjectGroup) => {
+    console.log("Selected Project Group:", selectedProjectGroup);
+    set({ selectedProjectGroup });
+
+    // Subscribe to messages for the selected project group
+    get().subscribeToProjectMessages();
+  },
+
+  getProjectMessages: async (projectId) => {
+    try {
+      if (!projectId) return;
+      console.log('Fetching messages for projectId:', projectId);
+      
+      const res = await axiosInstance.get(`/projectMessage/getProjectMessages/${projectId}`);
+      set({ projectMessages: res.data?.chat?.messages || [] });
+      console.log('Messages received:', res.data.chat);
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to fetch messages");
     }
   },
-  SendProjectGroupMessage: async MessageData => {
+
+  SendProjectGroupMessage: async (MessageData) => {
     const { selectedProjectGroup, projectMessages } = get();
+    if (!selectedProjectGroup) return;
+
     try {
       const res = await axiosInstance.post(
-        `/messages/send/${selectedProjectGroup._id}`,
+        `/projectMessage/sendProjectMessage/${selectedProjectGroup._id}`,
         MessageData
       );
-      set({ messages: [...projectMessages, res.data] });
+
+      console.log("res.data res.data",res.data.data);
+      
+
+      set({ projectMessages: [...projectMessages, res.data?.data] });
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to send message");
     }
+  },
+
+  subscribeToProjectMessages: () => {
+    const { selectedProjectGroup } = get();
+    if (!selectedProjectGroup) return;
+
+    socket.on("newMessage", (newMessage) => {
+      console.log("newMessage newMessage newMessage",newMessage);
+      
+      set({ projectMessages: [...get().projectMessages, newMessage] });
+    });
+  },
+
+  unsubscribeFromProjectMessages: () => {
+    socket.off("newMessage");
   },
 }));
