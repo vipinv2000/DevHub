@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema(
-  { 
+  {
     name: {
       type: String,
       required: [true, 'Project name is required'],
@@ -32,10 +32,10 @@ const projectSchema = new mongoose.Schema(
       required: [true, 'Project deadline is required']
     },
     techStack: {
-        type: [String], // Array of strings
-        default: [] // Ensures an empty array if no tech stack is provided
-      },
-      
+      type: [String], // Array of strings
+      default: [] // Ensures an empty array if no tech stack is provided
+    },
+
 
     interestedDev: {
       type: [
@@ -50,7 +50,7 @@ const projectSchema = new mongoose.Schema(
             type: Date,
             default: () => new Date()
           },
-          isRejected:{
+          isRejected: {
             type: Boolean,
             default: false
           }
@@ -71,6 +71,10 @@ const projectSchema = new mongoose.Schema(
           DateTime: {
             type: Date,
             default: () => new Date()
+          },
+          isOwner: {
+            type: Boolean,
+            default: false
           },
           moduleSubmissions: {
             type: [
