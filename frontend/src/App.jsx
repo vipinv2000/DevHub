@@ -29,6 +29,7 @@ import ProjectGroupSidebar from "./devHub/ProjectGroupSidebar.jsx";
 import ChatGroupRoot from "./devHub/ChatGroupRoot.jsx";
 import CreateCommunity from "./devHub/CreateCommunity.jsx";
 import CommunityList from "./devHub/ListCommunity.jsx";
+import CommunityRoot from "./components/Community/communityRoot.jsx";
 
 
 const App = () => {
@@ -70,7 +71,7 @@ const App = () => {
         <Route path="/add-story" element={<AddStory />} />
         <Route path="/InteractedUsersList" element={<InteractedUsersList />} />
 
-        <Route path="/devhub" element={<DevHubRoot />}>
+        {/* <Route path="/devhub" element={<DevHubRoot />}>
           <Route index  element={<ProjectDashboard />} />
           <Route path="AddProject" element={<AddProject />} />
           <Route path="MyProjectDetails" element={<MyProjectDetails />} />
@@ -78,7 +79,22 @@ const App = () => {
           <Route path="CreateCommunity" element={<CreateCommunity />} />
           <Route path="CommunityList" element={<CommunityList />} />
 
-        </Route>
+        </Route> */}
+
+<Route
+  path="/devhub"
+  element={authUser ? <DevHubRoot /> : <Navigate to="/login" />}>
+  <Route index element={<ProjectDashboard />} />
+  <Route path="AddProject" element={<AddProject />} />
+  <Route path="MyProjectDetails" element={<MyProjectDetails />} />
+  <Route path="ChatGroupRoot" element={<ChatGroupRoot />} />
+  <Route path="CreateCommunity" element={<CreateCommunity />} />
+  <Route path="CommunityList" element={<CommunityList />} />
+  <Route path="community" element={<CommunityRoot />} />
+  
+
+</Route>
+
       
 
       </Routes>

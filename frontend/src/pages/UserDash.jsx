@@ -169,7 +169,7 @@ const UserDashboard = () => {
         <img
           src={selectedStories[currentStoryIndex].userProfilePic || "/avatar.png"}
           alt="User"
-          className="w-16 h-16 rounded-full border-2 border-gray-600"
+          className="w-16 h-16 rounded-full border-2 border-gray-600 object-cover"
         />
         <div>
           <h3 className="font-semibold text-xl text-white">

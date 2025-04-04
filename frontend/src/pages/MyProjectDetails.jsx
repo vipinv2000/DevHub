@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { axiosInstance } from '../lib/axios';
-import { ArrowDown, Check, Circle, MessageCircleCodeIcon, MessageSquare, MessagesSquare, Users, X } from 'lucide-react';
+import { ArrowDown, Check, Circle, MessageCircleCodeIcon, MessageSquare, MessageSquareText, MessagesSquare, Users, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from 'antd';
 import { ProjectGroupSidebarFunction } from '../store/projectGroupStore';
 import ProjectGroupSidebar from '../devHub/ProjectGroupSidebar';
 import { useAuthStore } from '../store/useAuthStore';
+import { useNavigate } from 'react-router-dom';
 
 const MyProjectDetails = () => {
   const [selectedProject, setSelectedProject] = useState(null);
@@ -13,7 +14,7 @@ const MyProjectDetails = () => {
   const [showProjectDetails, setShowProjectDetails] = useState(false);
   const [projects, setprojects] = useState([]);
   const [selectedTab, setSelectedTab] = useState("one")
-  const { getProjectGroup, projectGroup } = ProjectGroupSidebarFunction();
+  const { getProjectGroup, projectGroup ,setSelectedProjectGroup, selectedProjectGroup} = ProjectGroupSidebarFunction();
   const [expanded, setExpanded] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
@@ -23,6 +24,7 @@ const MyProjectDetails = () => {
   });
 
   const { authUser } = useAuthStore();
+  const Navigate =useNavigate()
 
   const handleProjectClick = project => {
     setSelectedProject(project);
@@ -43,13 +45,10 @@ const MyProjectDetails = () => {
   useEffect(() => {
     fetchMyProjectsUpdates();
     getProjectGroup();
-
   }, []);
 
   const handleAccept = async (developerId, projectId) => {
     try {
-      console.log("prrrrrrsss", projectId);
-
       await axiosInstance.get(`/userdash/InterestRequestAccept/${developerId}/${projectId}`);
       toast.success('Accepted');
       setprojects(prevProjects =>
@@ -117,34 +116,51 @@ const MyProjectDetails = () => {
   const SendCodeFile = (e) => {
     e.preventDefault();
     console.log("Form Data Submitted:", formData);
-    
   };
 
-
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className=' w-full flex justify-between'>
-          <button
-            onClick={() => setSelectedTab("one")}
-            className={`p-2 bg-gray-400 ${selectedTab === "one" ? "hover:bg-green-500" : ""}`}>
-            My Project
-          </button>
+    <div className="min-h-screen bg-gray-100">
+      
+      <nav className="bg-white shadow-lg">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex justify-center space-x-8 py-4">
+            <button
+              onClick={() => setSelectedTab("one")}
+              className={`relative px-6 py-2 text-lg font-medium transition-all duration-200 ${
+                selectedTab === "one"
+                  ? "text-blue-600 transform scale-110"
+                  : "text-gray-600 hover:text-blue-500"
+              }`}
+            >
+              My Projects
+              {selectedTab === "one" && (
+                <span className="absolute bottom-0 left-0 w-full h-1 bg-blue-600 rounded-t-lg transform scale-x-100 transition-transform duration-200"></span>
+              )}
+            </button>
 
-          <button
-            onClick={() => setSelectedTab("two")}
-            className={`p-2 bg-gray-400 ${selectedTab === "two" ? "hover:bg-green-500" : ""}`}>
-            Commited Project
-          </button>
+            <button
+              onClick={() => setSelectedTab("two")}
+              className={`relative px-6 py-2 text-lg font-medium transition-all duration-200 ${
+                selectedTab === "two"
+                  ? "text-blue-600 transform scale-110"
+                  : "text-gray-600 hover:text-blue-500"
+              }`}
+            >
+              Committed Projects
+              {selectedTab === "two" && (
+                <span className="absolute bottom-0 left-0 w-full h-1 bg-blue-600 rounded-t-lg transform scale-x-100 transition-transform duration-200"></span>
+              )}
+            </button>
+          </div>
         </div>
+      </nav>
 
-        {/* My Projects */}
-
-        {
-          selectedTab === "one" ? (<div>
+      <div className="max-w-6xl mx-auto p-8">
+        {selectedTab === "one" ? (
+          <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-8">My Projects</h1>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Rest of the My Projects content remains the same */}
               {projects.map(project => (
                 <div
                   key={project._id}
@@ -173,7 +189,6 @@ const MyProjectDetails = () => {
                           <Users size={20} className="mr-2" />
                           <span>{project.interestedDev.length} interested</span>
                         </div>
-
                       </div>
                       <div className="text-sm text-gray-500">
                         Due: {new Date(project.deadline).toLocaleDateString()}
@@ -183,9 +198,12 @@ const MyProjectDetails = () => {
                 </div>
               ))}
             </div>
-          </div>) : (<div>
+          </div>
+        ) : (
+          <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-8">Contributed Projects</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Rest of the Committed Projects content remains the same */}
               {projectGroup.map((project, index) => (
                 <div
                   key={project._id}
@@ -201,77 +219,79 @@ const MyProjectDetails = () => {
                         {project.status}
                       </span>
                     </div>
-                    <p className="text-gray-600 line-clamp-3">{project.description}</p>
+                    <p className="text-gray-600 line-clamp-2">{project.description}</p>
                   </div>
 
                   <div className="mt-4 pt-4 border-t">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        {
-                          authUser?._id === project?.owner?._id ? (
-                            <div
-                              className="flex items-center text-gray-500 bg-blue-300 px-2 py-1 rounded-xl"
-                            >
-                              owned
-                            </div>
-                          ) : (
-                            <div
-                              className="flex items-center text-gray-500 bg-green-300 px-2 py-1 rounded-xl"
-                            >
-                              contributor
-                            </div>
-                          )
-                        }
-
+                        {authUser?._id === project?.owner?._id ? (
+                          <div className="flex items-center text-gray-500 bg-blue-300 px-2 py-1 rounded-xl">
+                            owned
+                          </div>
+                        ) : (
+                          <div className="flex items-center text-gray-500 bg-green-300 px-2 py-1 rounded-xl">
+                            contributor
+                          </div>
+                        )}
                       </div>
-                      <div
+                     <div  className='flex gap-5'>
+                     <div
+                       onClick={()=>{
+                        setSelectedProjectGroup(project)
+                        Navigate('/devhub/ChatGroupRoot')
+                      }}
+                        className="text-sm text-gray-400 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition-colors "
+                      >
+                        <MessageSquareText size={20} />
+                      </div>
+                     <div
                         onClick={() => setExpanded(index === expanded ? null : index)}
-                        className="text-sm text-gray-400 bg-gray-200 p-1 rounded-full">
-                        <ArrowDown />
+                        className="text-sm text-gray-400 bg-gray-200 p-1 rounded-full hover:bg-gray-300 transition-colors"
+                      >
+                        <ArrowDown className={`transform transition-transform duration-200 ${expanded === index ? 'rotate-180' : ''}`} />
                       </div>
+                     </div>
                     </div>
                   </div>
-                  {
-                    expanded === index && (
-                      <div className='w-full h-auto bg-gray-100 mt-3 rounded-lg transition transform duration-300  ease-in-out'>
-                        <form action="" className="p-2 flex flex-col gap-3 text-gray-600" onSubmit={SendCodeFile}>
-                          <div className="flex flex-col gap-1 w-full justify-center items-center">
-                            <h1 className="font-extrabold">Submit Your Work</h1>
-                          </div>
+                  {expanded === index && (
+                    <div className='w-full h-auto bg-gray-100 mt-3 rounded-lg transition transform duration-300 ease-in-out '>
+                      <form action="" className="p-2 flex flex-col gap-3 text-gray-600" onSubmit={SendCodeFile}>
+                        <div className="flex flex-col gap-1 w-full justify-center items-center">
+                          <h1 className="font-extrabold">Submit Your Work</h1>
+                        </div>
 
-                          <div className="flex flex-col gap-1">
-                            <label>Title :</label>
-                            <input type="text" name="title" value={formData.title} onChange={handleChange} className="px-2 py-1 border rounded-md" placeholder="Title" />
-                          </div>
+                        <div className="flex flex-col gap-1">
+                          <label>Title :</label>
+                          <input type="text" name="title" value={formData.title} onChange={handleChange} className="px-2 py-1 border rounded-md" placeholder="Title" />
+                        </div>
 
-                          <div className="flex flex-col gap-1">
-                            <label>Description :</label>
-                            <input type="text" name="description" value={formData.description} onChange={handleChange} className="px-2 py-1 border rounded-md" placeholder="Descri..." />
-                          </div>
+                        <div className="flex flex-col gap-1">
+                          <label>Description :</label>
+                          <input type="text" name="description" value={formData.description} onChange={handleChange} className="px-2 py-1 border rounded-md" placeholder="Descri..." />
+                        </div>
 
-                          <div className="flex flex-col gap-1">
-                            <label>Github Link :</label>
-                            <input type="text" name="githubLink" value={formData.githubLink} onChange={handleChange} className="px-2 py-1 border rounded-md" placeholder="Repo Link" />
-                          </div>
+                        <div className="flex flex-col gap-1">
+                          <label>Github Link :</label>
+                          <input type="text" name="githubLink" value={formData.githubLink} onChange={handleChange} className="px-2 py-1 border rounded-md" placeholder="Repo Link" />
+                        </div>
 
-                          <div className="flex flex-col gap-1">
-                            <label>Zip File :</label>
-                            <input type="file" name="zipFile" onChange={handleChange} className="px-2 py-1 border rounded-md" />
-                          </div>
+                        <div className="flex flex-col gap-1">
+                          <label>Zip File :</label>
+                          <input type="file" name="zipFile" onChange={handleChange} className="px-2 py-1 border rounded-md" />
+                        </div>
 
-                          <div className="flex flex-col gap-1">
-                            <input type="submit" value="Submit" className="px-2 py-1 bg-blue-300 hover:bg-blue-400 rounded-xl cursor-pointer" />
-                          </div>
-                        </form>
-                      </div>
-                    )
-                  }
-
+                        <div className="flex flex-col gap-1">
+                          <input type="submit" value="Submit" className="px-2 py-1 bg-blue-300 hover:bg-blue-400 rounded-xl cursor-pointer" />
+                        </div>
+                      </form>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
-          </div>)
-        }
+          </div>
+        )}
 
         {/* Project Details Modal */}
         {showProjectDetails && selectedProject && (
@@ -313,7 +333,12 @@ const MyProjectDetails = () => {
                         {new Date(selectedProject.deadline).toLocaleDateString()}
                       </p>
                     </div>
-                    <div className='ml-16 '> <MessageSquare className="w-5 h-5 text-primary cursor-pointer" /></div>
+                    <div className='ml-16'><MessageSquare 
+                    onClick={()=>{
+                      setSelectedProjectGroup(selectedProject)
+                      Navigate('/devhub/ChatGroupRoot')
+                    }}
+                     className="w-5 h-5 text-primary cursor-pointer" /></div>
                     <div>
                       <span className="font-medium text-gray-600">Tech Stack:</span>
                       <div className="flex flex-wrap gap-2 mt-2">
@@ -459,4 +484,3 @@ const MyProjectDetails = () => {
 };
 
 export default MyProjectDetails;
-
