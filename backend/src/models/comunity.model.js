@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { type } from "os";
 
 const comunitySchema = new mongoose.Schema(
     {
@@ -90,6 +91,10 @@ const comunitySchema = new mongoose.Schema(
                     link: {
                         type: String,
                         default: false
+                    },
+                    isPost: {
+                        type: Boolean,
+                        default: true
                     }
                 },
             ],
