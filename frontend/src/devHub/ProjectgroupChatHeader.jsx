@@ -3,6 +3,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import { ProjectGroupSidebarFunction } from "../store/projectGroupStore.js";
 import { useEffect } from "react";
+import NoChatSelected from "../components/NoChatSelected.jsx";
 
 const ProjectgroupChatHeader = () => {
 const { setSelectedProgectGroup,selectedProjectGroup,getProjectMessages } = ProjectGroupSidebarFunction();
@@ -40,6 +41,7 @@ useEffect(() => {
           <X />
         </button>
       </div>
+      
     </div>
   );
 };

@@ -22,7 +22,7 @@ const DevHubRoot = () => {
         </div>
 
         {/* Outlet - Scrollable Content */}
-        <div className={`ml-auto ${isMenuactive ? "w-[95%]" : "w-[85%]"} h-[calc(100vh-4rem)] overflow-hidden`}>
+        <div className={`ml-auto ${isMenuactive ? "w-[95%]" : "w-[85%]"} h-[calc(100vh-4rem)] overflow-hidden `}>
   <Outlet />
 </div>
 

@@ -100,7 +100,7 @@ const MyProjectDetails = () => {
             <div
               key={project._id}
               onClick={() => handleProjectClick(project)}
-              className="bg-white rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition-shadow flex flex-col h-full"
+              className="bg-white rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg hover:scale-105 hover:transition-transform transition-shadow flex flex-col h-full"
             >
               <div className="flex-grow">
                 <div className="flex justify-between items-start mb-4">

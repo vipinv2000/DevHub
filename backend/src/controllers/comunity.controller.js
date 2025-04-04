@@ -70,15 +70,18 @@ export const joinCommunity = async (req, res) => {
 export const listComunity = async (req, res) => {
     try {
         const userId = req.user._id;
-        const ListOfComunityes = await Comunity.find({});
+        console.log("uuuuuu",userId);
+        
+        const ListOfComunityes = await Comunity.find({}).populate('owner',"-password -profilePic")
+       
 
         const UpdatedCommunity = ListOfComunityes.map((comunity) => (
             {
                 ...comunity.toObject(),
-                alreadyIn: comunity.Members.some(user => user.userId.toString === userId.toString())
+                alreadyIn: comunity.Members.some(user => user.userId.toString() === userId.toString())
             }
         ))
-        console.log("OrgCommunit", UpdatedCommunity);
+     
 
         return res.status(200).json({ success: true, UpdatedCommunity })
 
