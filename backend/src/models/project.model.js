@@ -92,6 +92,10 @@ const projectSchema = new mongoose.Schema(
                   type: String,
                   trim: true
                 },
+                filePath: {
+                  type: String,
+                  trim: true
+                },
                 files: [
                   {
                     filename: { type: String, required: true },

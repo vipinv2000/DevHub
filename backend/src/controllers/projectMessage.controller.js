@@ -144,6 +144,9 @@ export const CodeSubmission = async (req, res) => {
         const { title, githubLink, description } = req.body;
         const zipFile = req.files?.zipFile; // express-fileupload handles file uploads as req.files
 
+        console.log(req.body);
+
+
         if (!title || !githubLink || !description) {
             return res.status(400).json({ success: false, message: "All fields are required" });
         }
@@ -163,7 +166,7 @@ export const CodeSubmission = async (req, res) => {
         // Handle File Storage (Saving to 'uploads/' directory)
         let zipFilePath = "";
         if (zipFile) {
-            const uploadDir = path.join(__dirname, "..", "uploads", projectId); // Store in `uploads/projectId/`
+            const uploadDir = path.join(__dirname, "..", "uploads", projectId,userId.toString()); // Store in `uploads/projectId/`
             if (!fs.existsSync(uploadDir)) {
                 fs.mkdirSync(uploadDir, { recursive: true });
             }
@@ -171,6 +174,8 @@ export const CodeSubmission = async (req, res) => {
 
             // Move the file to the server storage
             await zipFile.mv(zipFilePath);
+            console.log("zipFilePath zipFilePath",zipFilePath);
+            
         }
 
         // Create module submission
@@ -178,7 +183,7 @@ export const CodeSubmission = async (req, res) => {
             title,
             githubLink,
             description,
-            zipFile: zipFilePath, // Store file path
+            filePath: zipFilePath, // Store file path
             submittedAt: new Date(),
         };
 

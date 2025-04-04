@@ -60,7 +60,7 @@ const DevHubSidebar = () => {
             name: 'Settings',
             icon: Settings,
             id: 'settings',
-            path: '/devhub/ChatGroupRoot',
+            
           },
         ].map(item => (
           <button
@@ -94,7 +94,7 @@ const DevHubSidebar = () => {
       <div className="mt-auto w-full">
         <button
           onClick={logout}
-          className={`cursor-pointer text-white w-full flex items-center px-4 py-3 hover:bg-red-600 ${
+          className={`cursor-pointer text-white w-full flex items-center px-4 py-3 hover:text-red-600 ${
             isMenuactive ? 'justify-center' : 'justify-start'
           }`}
         >

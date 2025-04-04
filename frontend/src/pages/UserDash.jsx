@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaCommentDots, FaUser, FaUsers, FaPlusCircle, FaHome, FaArrowLeft, FaArrowRight, FaTimes } from "react-icons/fa";
 import { MdAddBox } from "react-icons/md";
 import { axiosInstance } from "../lib/axios";
 import Feedpost from "../components/Feedpost";
+import { Earth } from "lucide-react";
+import { TbWorldBolt } from "react-icons/tb";
 
 const UserDashboard = () => {
   const [stories, setStories] = useState([]);
@@ -17,6 +19,8 @@ const UserDashboard = () => {
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
   const [showStoryViewer, setShowStoryViewer] = useState(false);
   const [refresh, setRefresh] = useState()
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetchStories();
@@ -141,16 +145,24 @@ const UserDashboard = () => {
   };
   return (
     <div className="bg-gray-900 text-white min-h-screen p-2 relative">
-      <h1 className="text-xl md:text-2xl font-extrabold font-serif italic text-white ml-4 mt-4 flex items-center gap-2 pb-2">
-        <span className="text-blue-400">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-6 h-6">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V6a2 2 0 012-2h12a2 2 0 012 2v2m-8 4v8m-4-4h8m-6-8h4m-6 4h8M4 16v2m16-2v2M4 12v2m16-2v2M4 8v2m16-2v2" />
-          </svg>
-        </span>
-        <span className="bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
-          TechHive
-        </span>
-      </h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl md:text-2xl font-extrabold font-serif italic text-white ml-4 my-4 flex items-center gap-2 pb-2">
+          <span className="text-blue-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V6a2 2 0 012-2h12a2 2 0 012 2v2m-8 4v8m-4-4h8m-6-8h4m-6 4h8M4 16v2m16-2v2M4 12v2m16-2v2M4 8v2m16-2v2" />
+            </svg>
+          </span>
+          <span className="bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
+            TechHive
+          </span>
+
+        </h1>
+        <div className="mr-4 text-gray-400 cursor-pointer" onClick={()=>{
+          navigate("/devHub")
+        }}>
+          <TbWorldBolt size={27} />
+        </div>
+      </div>
 
       {/* Story Viewer Modal */}
       {showStoryViewer && selectedStories.length > 0 && (
@@ -169,18 +181,17 @@ const UserDashboard = () => {
               <img
                 src={selectedStories[currentStoryIndex].userProfilePic || "/avatar.png"}
                 alt="User"
-                className="w-16 h-16 rounded-full border-2 border-gray-600 shrink-0"
+                className="w-16 h-16 rounded-full border-2 border-gray-600 object-cover"
               />
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-xl text-white truncate">
+              <div>
+                <h3 className="font-semibold text-xl text-white">
                   {selectedStories[currentStoryIndex].userName || "Unknown User"}
                 </h3>
-                <p className="text-sm text-gray-400 truncate">
+                <p className="text-sm text-gray-400">
                   {new Date(selectedStories[currentStoryIndex].date).toLocaleString()}
                 </p>
               </div>
             </div>
-
 
             {/* Story Content */}
             <div className="mt-6 w-full flex justify-center">

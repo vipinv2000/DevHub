@@ -249,7 +249,7 @@ export const getcommunityMessages = async (req, res) => {
             .populate("posts.senderId", "fullName email profilePic")
             .lean();
 
-        console.log("community", community);
+        
 
         if (!community) {
             return res.status(404).json({ success: false, message: "Community not found" });
@@ -261,9 +261,11 @@ export const getcommunityMessages = async (req, res) => {
         }
 
         const joinedMessages = [...community.messages, ...community.posts].sort((a, b) => {
+            
             return new Date(a.createdAt) - new Date(b.createdAt);
         });
-
+     console.log('joinedMessages',joinedMessages);
+     
         delete community.messages;
         delete community.posts;
 
