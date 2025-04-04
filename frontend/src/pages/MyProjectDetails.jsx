@@ -267,14 +267,11 @@ const MyProjectDetails = () => {
                     )
                   }
 
-
                 </div>
               ))}
             </div>
           </div>)
         }
-
-
 
         {/* Project Details Modal */}
         {showProjectDetails && selectedProject && (

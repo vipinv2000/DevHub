@@ -27,6 +27,8 @@ import MyProjectDetails from "./pages/MyProjectDetails.jsx";
 import DevHubRoot from "./devHub/DevHubRoot.jsx";
 import ProjectGroupSidebar from "./devHub/ProjectGroupSidebar.jsx";
 import ChatGroupRoot from "./devHub/ChatGroupRoot.jsx";
+import CreateCommunity from "./devHub/CreateCommunity.jsx";
+import CommunityList from "./devHub/ListCommunity.jsx";
 
 
 const App = () => {
@@ -73,6 +75,8 @@ const App = () => {
           <Route path="AddProject" element={<AddProject />} />
           <Route path="MyProjectDetails" element={<MyProjectDetails />} />
           <Route path="ChatGroupRoot" element={<ChatGroupRoot />} />
+          <Route path="CreateCommunity" element={<CreateCommunity />} />
+          <Route path="CommunityList" element={<CommunityList />} />
 
         </Route>
       
