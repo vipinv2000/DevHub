@@ -26,7 +26,7 @@ const ProjectGroupSidebar = () => {
               onClick={() => setSelectedProjectGroup(user)}
               className={`
                 w-full p-3 flex items-center gap-3
-                hover:bg-base-300 transition-colors
+                hover:bg-base-300 transition-colors  border-b-2 border-gray-100 
                 ${selectedProjectGroup?._id === user._id ? "bg-base-300 ring-1 ring-base-300" : ""}
               `}
             >
@@ -40,6 +40,7 @@ const ProjectGroupSidebar = () => {
 
               <div className="hidden lg:block text-left min-w-0">
                 <div className="font-medium truncate">{user.name}</div>
+                <p className='text-xs italic text-slate-500'>founder  {user.owner.fullName}</p>
               </div>
             </button>
           ))}

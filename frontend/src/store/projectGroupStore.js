@@ -1,11 +1,11 @@
 import toast from 'react-hot-toast';
 import { create } from 'zustand';
 import { axiosInstance } from '../lib/axios';
-import { io } from 'socket.io-client';
+import { io } from "socket.io-client"; 
 
 // Initialize socket
-const socket = io('http://localhost:5001', {
-  transports: ['websocket'],
+const socket = io("http://localhost:5001", {
+  transports: ["websocket"],
 });
 
 export const ProjectGroupSidebarFunction = create((set, get) => ({
@@ -23,30 +23,28 @@ export const ProjectGroupSidebarFunction = create((set, get) => ({
     }
   },
 
-  setSelectedProjectGroup: selectedProjectGroup => {
-    console.log('Selected Project Group:', selectedProjectGroup);
+  setSelectedProjectGroup: (selectedProjectGroup) => {
+    console.log("Selected Project Group:", selectedProjectGroup);
     set({ selectedProjectGroup });
 
     // Subscribe to messages for the selected project group
     get().subscribeToProjectMessages();
   },
 
-  getProjectMessages: async projectId => {
+  getProjectMessages: async (projectId) => {
     try {
       if (!projectId) return;
       console.log('Fetching messages for projectId:', projectId);
-
-      const res = await axiosInstance.get(
-        `/projectMessage/getProjectMessages/${projectId}`
-      );
+      
+      const res = await axiosInstance.get(`/projectMessage/getProjectMessages/${projectId}`);
       set({ projectMessages: res.data?.chat?.messages || [] });
       console.log('Messages received:', res.data.chat);
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to fetch messages');
+      toast.error(error.response?.data?.message || "Failed to fetch messages");
     }
   },
 
-  SendProjectGroupMessage: async MessageData => {
+  SendProjectGroupMessage: async (MessageData) => {
     const { selectedProjectGroup, projectMessages } = get();
     if (!selectedProjectGroup) return;
 
@@ -56,11 +54,12 @@ export const ProjectGroupSidebarFunction = create((set, get) => ({
         MessageData
       );
 
-      console.log('res.data res.data', res.data.data);
+      console.log("res.data res.data",res.data.data);
+      
 
       set({ projectMessages: [...projectMessages, res.data?.data] });
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to send message');
+      toast.error(error.response?.data?.message || "Failed to send message");
     }
   },
 
@@ -68,14 +67,17 @@ export const ProjectGroupSidebarFunction = create((set, get) => ({
     const { selectedProjectGroup } = get();
     if (!selectedProjectGroup) return;
 
-    socket.on('newMessage', newMessage => {
-      console.log('newMessage newMessage newMessage', newMessage);
-
+    socket.on("newMessage", (newMessage) => {
+      console.log("newMessage newMessage newMessage",newMessage);
+      
       set({ projectMessages: [...get().projectMessages, newMessage] });
     });
   },
 
   unsubscribeFromProjectMessages: () => {
-    socket.off('newMessage');
+    socket.off("newMessage");
   },
+  Submit_CodeFile_To_Woner : async (item)=>{
+    
+  }
 }));
