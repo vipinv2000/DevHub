@@ -21,6 +21,7 @@ const AddProject = () => {
   const [searchText, setSearchText] = useState('');
   const [image, setImage] = useState(null);
   const [previmage, setPrevImage] = useState(null);
+  const [addingProject, setAddingProject] = useState(false);
 
 
   const handleSearch = (input) => {
@@ -64,7 +65,7 @@ const AddProject = () => {
     if (!formData.name.trim()) return toast.error('Project name is required!');
     if (!formData.description.trim()) return toast.error('Description is required!');
     if (!formData.deadline) return toast.error('Deadline is required!');
-
+    setAddingProject(true)
     try {
       const finalData ={...formData,image:image}
       console.log("Final",finalData);
@@ -85,6 +86,8 @@ const AddProject = () => {
     } catch (error) {
       toast.error('Error adding project!');
       console.error('Error:', error.response?.data?.message || error.message);
+    }finally{
+      setAddingProject(false)
     }
   };
 
@@ -190,8 +193,10 @@ const AddProject = () => {
       )}
 
       {/* Submit Button */}
-      <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg flex items-center justify-center font-semibold">
-        <Plus size={18} className="mr-2" /> Add Project
+      <button type="submit" className={`w-full ${
+    addingProject ? "bg-purple-300 cursor-not-allowed" : "bg-purple-500 hover:bg-purple-600"
+  } text-white py-2 px-4 rounded-lg flex items-center justify-center font-semibold`}>
+        <Plus size={18} className="mr-2" /> {addingProject?"Adding...":"Add Project"}
       </button>
     </form>
   </div>

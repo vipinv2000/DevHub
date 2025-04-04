@@ -6,8 +6,9 @@ import { axiosInstance } from '../lib/axios';
 import { useNavigate } from 'react-router-dom';
 
 const CreateCommunity = () => {
+  const [image, setImage] = useState('');
+  const [adding, setAdding] = useState(false);
 
-  const [image, setImage] = useState('')
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -26,28 +27,28 @@ const CreateCommunity = () => {
       setImage(base64Image);
     };
   };
- 
 
   // Handle Form Submission
   const handleSubmit = async e => {
     e.preventDefault();
-
+    setAdding(true);
     try {
       const finalData = {
         name: formData.name,
         description: formData.description,
         image: image,
-
       };
       console.log('finaldata', finalData);
 
       await axiosInstance.post('/comunity/createCommunity', finalData);
 
       toast.success('Post added successfully!');
-      setFormData({})
-      navigate('/devhub');
+      setFormData({});
+      navigate('/devhub/CommunityList');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Something went wrong');
+    } finally {
+      setAdding(false);
     }
   };
 
@@ -65,9 +66,7 @@ const CreateCommunity = () => {
             rows="3"
             placeholder="Write a caption..."
             value={formData.name}
-            onChange={e =>
-              setFormData({ ...formData, name: e.target.value })
-            }
+            onChange={e => setFormData({ ...formData, name: e.target.value })}
           />
 
           {/* Description */}
@@ -89,14 +88,17 @@ const CreateCommunity = () => {
             onChange={handleImageChange}
           />
 
-        
-
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-purple-500 text-white p-3 rounded-lg hover:bg-purple-600 transition"
+            disabled={adding}
+            className={`w-full text-white p-3 rounded-lg transition ${
+              adding
+                ? 'bg-purple-300 cursor-not-allowed'
+                : 'bg-purple-500 hover:bg-purple-600'
+            }`}
           >
-           Add Community
+            {adding ? 'Adding...' : 'Add Community'}
           </button>
         </form>
       </div>
