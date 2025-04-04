@@ -47,7 +47,17 @@ const CommunityList = () => {
   if (loading) return <p className="text-center">Loading communities...</p>;
 
 if (communities.length === 0) {
-  return <p className="text-center text-gray-500">No communities available.</p>;
+  return <>
+  <h2 className="text-center text-gray-500 pt-10">No communities available.</h2>;
+  <div className='fixed bottom-10 right-10 bg-gray-800 rounded-full p-3 shadow-lg hover:scale-105'>
+        <Link
+          to="/devhub/CreateCommunity"
+          className=" h-fit text-white bg-black rounded-full  shadow-lg text-[20px] "
+        >
+          <Plus size={40}/>
+        </Link>
+      </div>
+  </>
 }
 
 

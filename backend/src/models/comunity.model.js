@@ -86,11 +86,11 @@ const comunitySchema = new mongoose.Schema(
                     },
                     description: {
                         type: String,
-                        default: false
+                        default: '',
                     },
                     link: {
                         type: String,
-                        default: false
+                        default: '',
                     },
                     isPost: {
                         type: Boolean,
