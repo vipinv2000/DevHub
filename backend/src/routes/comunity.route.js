@@ -1,6 +1,8 @@
 import express from "express";
 import { protectRoute } from "../middleware/auth.middleware.js";
-import { createCommunity, joinCommunity ,listComunity,communityGroupForSideBar,sendCommunityMessage} from "../controllers/comunity.controller.js";
+import { createCommunity, joinCommunity ,listComunity,communityGroupForSideBar,
+    sendCommunityMessage,sendCommunityPost,getcommunityMessages
+} from "../controllers/comunity.controller.js";
 
 const router = express.Router();
 
@@ -9,5 +11,7 @@ router.get("/joinCommunity/:comunityId", protectRoute,joinCommunity);
 router.get("/listComunity", protectRoute,listComunity);
 router.get("/communityGroup", protectRoute, communityGroupForSideBar);
 router.post("/sendCommunityMessage/:cumId", protectRoute, sendCommunityMessage);
+router.post("/sendCommunityPost/:cumId", protectRoute, sendCommunityPost);
+router.get("/getcommunityMessages/:cumId", protectRoute, getcommunityMessages);
 
 export default router;

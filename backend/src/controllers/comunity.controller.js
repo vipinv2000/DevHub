@@ -1,5 +1,7 @@
 import cloudinary from "../lib/cloudinary.js";
 import Comunity from "../models/comunity.model.js";
+import { getReceiverSocketId, io } from '../lib/socket.js';
+import User from "../models/user.model.js";
 
 export const createCommunity = async (req, res) => {
     try {
@@ -136,39 +138,27 @@ export const sendCommunityMessage = async (req, res) => {
             }
         }
 
-// .................................................................................................................
-
-        const groupList = await ProjectMessage.findOne({ groupId: projectId });
         let sendingMessage = {
             senderId: senderId,
             text,
             image: imageUrl,
             createdAt: new Date(),
-            isOwner: projectDetails.owner.toString() === senderId.toString()
+            isOwner: CumDetails.owner.toString() === senderId.toString()
         };
 
-        if (groupList) {
-            groupList.messages.push(sendingMessage);xc 
+        CumDetails.messages.push(sendingMessage);
+        await CumDetails.save();
 
-            
-            await groupList.save();
-        } else {
-            const newProjectMessage = new ProjectMessage({
-                groupId: projectId,
-                messages: [sendingMessage]
-            });
-            await newProjectMessage.save();
-        }
 
         sendingMessage = {
             senderId: senderUser,
             text,
             image: imageUrl,
             createdAt: new Date(),
-            isOwner: projectDetails.owner.toString() === senderId.toString()
+            isOwner: CumDetails.owner.toString() === senderId.toString()
         }
 
-        const receiverSocketId = getReceiverSocketId(projectId);
+        const receiverSocketId = getReceiverSocketId(cumId);
         if (receiverSocketId) {
             io.to(receiverSocketId).emit('newMessage', sendingMessage);
         }
@@ -179,3 +169,111 @@ export const sendCommunityMessage = async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }
+
+export const sendCommunityPost = async (req, res) => {
+    try {
+        const { name, image, description, link } = req.body;
+        const { cumId } = req.params;
+        const senderId = req.user._id;
+
+        const senderUser = await User.findOne({ _id: senderId }).select("_id fullName profilePic");
+        const CumDetails = await Comunity.findById(cumId);
+        if (!CumDetails) {
+            return res.status(404).json({ success: false, message: "Community Not Found!" });
+        }
+
+        const MembersIndex = CumDetails.Members.findIndex(dev => dev.userId.toString() === senderId.toString());
+        if (MembersIndex === -1) {
+            return res.status(403).json({ success: false, message: "You're not a part of this Community!" });
+        }
+
+        let imageUrl = null;
+        if (image) {
+            try {
+                const uploadResponse = await cloudinary.uploader.upload(image);
+                imageUrl = uploadResponse.secure_url;
+            } catch (uploadError) {
+                console.error("Cloudinary upload error:", uploadError);
+                return res.status(500).json({ success: false, message: "Image upload failed!" });
+            }
+        }
+
+        let sendingPost = {
+            senderId: senderId,
+            name,
+            image: imageUrl,
+            createdAt: new Date(),
+            description,
+            link,
+            isOwner: CumDetails.owner.toString() === senderId.toString()
+        };
+
+        CumDetails.posts.push(sendingPost);
+        await CumDetails.save();
+
+
+        sendingPost = {
+            senderId: senderUser,
+            name,
+            image: imageUrl,
+            createdAt: new Date(),
+            description,
+            link,
+            isOwner: CumDetails.owner.toString() === senderId.toString()
+        }
+
+        const receiverSocketId = getReceiverSocketId(cumId);
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit('newMessage', sendingPost);
+        }
+
+        res.status(201).json({ success: true, message: "Post sent successfully!", data: sendingPost });
+    } catch (error) {
+        console.error('Error in sendProjectMessage controller:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+export const getcommunityMessages = async (req, res) => {
+    try {
+        console.log("pId", req.params);
+
+        const userId = req.user._id;
+        const { cumId } = req.params;
+
+        const community = await Comunity.findById(cumId)
+            .populate("messages.senderId", "fullName email profilePic")
+            .populate("posts.senderId", "fullName email profilePic")
+            .lean();
+
+        console.log("community", community);
+
+        if (!community) {
+            return res.status(404).json({ success: false, message: "Community not found" });
+        }
+
+        const isUserIncluded = community.Members.some(dev => dev.userId.toString() === userId.toString());
+        if (!isUserIncluded) {
+            return res.status(403).json({ success: false, message: "You are not authorized to read messages" });
+        }
+
+        const joinedMessages = [...community.messages, ...community.posts].sort((a, b) => {
+            return new Date(a.createdAt) - new Date(b.createdAt);
+        });
+
+        delete community.messages;
+        delete community.posts;
+
+        return res.status(200).json({
+            success: true,
+            community,
+            joinedMessages,
+        });
+
+    } catch (error) {
+        console.error("Error in getcommunityMessages controller:", error.message);
+        res.status(500).json({ success: false, error: "Internal server error" });
+    }
+};
+
+

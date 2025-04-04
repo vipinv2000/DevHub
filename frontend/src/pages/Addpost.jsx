@@ -27,6 +27,8 @@ const AddPost = () => {
     reader.readAsDataURL(file);
     reader.onload = async () => {
       const base64Image = reader.result;
+      console.log(base64Image);
+      
       setImage(base64Image);
     };
   };

@@ -1,14 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { axiosInstance } from '../lib/axios';
-import { Check, MessageCircleCodeIcon, MessageSquare, MessagesSquare, Users, X } from 'lucide-react';
+import { ArrowDown, Check, Circle, MessageCircleCodeIcon, MessageSquare, MessagesSquare, Users, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from 'antd';
+import { ProjectGroupSidebarFunction } from '../store/projectGroupStore';
+import ProjectGroupSidebar from '../devHub/ProjectGroupSidebar';
+import { useAuthStore } from '../store/useAuthStore';
 
 const MyProjectDetails = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showProjectDetails, setShowProjectDetails] = useState(false);
   const [projects, setprojects] = useState([]);
+  const [selectedTab, setSelectedTab] = useState("one")
+  const { getProjectGroup, projectGroup } = ProjectGroupSidebarFunction();
+  const [expanded, setExpanded] = useState(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    githubLink: "",
+    zipFile: null,
+  });
+
+  const { authUser } = useAuthStore();
 
   const handleProjectClick = project => {
     setSelectedProject(project);
@@ -28,23 +42,25 @@ const MyProjectDetails = () => {
 
   useEffect(() => {
     fetchMyProjectsUpdates();
+    getProjectGroup();
+
   }, []);
 
-  const handleAccept = async (developerId,projectId) => {
+  const handleAccept = async (developerId, projectId) => {
     try {
-      console.log("prrrrrrsss",projectId);
-      
+      console.log("prrrrrrsss", projectId);
+
       await axiosInstance.get(`/userdash/InterestRequestAccept/${developerId}/${projectId}`);
       toast.success('Accepted');
       setprojects(prevProjects =>
         prevProjects.map(project =>
           project._id === selectedProject._id
             ? {
-                ...project,
-                interestedDev: project.interestedDev.filter(
-                  dev => dev.userId._id !== developerId
-                ),
-              }
+              ...project,
+              interestedDev: project.interestedDev.filter(
+                dev => dev.userId._id !== developerId
+              ),
+            }
             : project
         )
       );
@@ -60,7 +76,7 @@ const MyProjectDetails = () => {
     }
   };
 
-  const handleReject = async (developerId,projectId) => {
+  const handleReject = async (developerId, projectId) => {
     try {
       await axiosInstance.get(`/userdash/InterestRequestReject/${developerId}/${projectId}`);
       toast.success('Rejected');
@@ -68,13 +84,13 @@ const MyProjectDetails = () => {
         prevProjects.map(project =>
           project._id === selectedProject._id
             ? {
-                ...project,
-                interestedDev: project.interestedDev.map(dev =>
-                  dev.userId._id === developerId
-                    ? { ...dev, isRejected: true }
-                    : dev
-                ),
-              }
+              ...project,
+              interestedDev: project.interestedDev.map(dev =>
+                dev.userId._id === developerId
+                  ? { ...dev, isRejected: true }
+                  : dev
+              ),
+            }
             : project
         )
       );
@@ -90,50 +106,175 @@ const MyProjectDetails = () => {
     }
   };
 
+  const handleChange = (e) => {
+    const { name, value, type, files } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "file" ? files[0] : value,
+    }));
+  };
+
+  const SendCodeFile = (e) => {
+    e.preventDefault();
+    console.log("Form Data Submitted:", formData);
+    
+  };
+
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">My Projects</h1>
+        <div className=' w-full flex justify-between'>
+          <button
+            onClick={() => setSelectedTab("one")}
+            className={`p-2 bg-gray-400 ${selectedTab === "one" ? "hover:bg-green-500" : ""}`}>
+            My Project
+          </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map(project => (
-            <div
-              key={project._id}
-              onClick={() => handleProjectClick(project)}
-              className="bg-white rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition-shadow flex flex-col h-full"
-            >
-              <div className="flex-grow">
-                <div className="flex justify-between items-start mb-4">
-                  <h2 className="text-xl font-semibold text-gray-800">
-                    {project.name}
-                  </h2>
-                  <span className="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                    {project.status}
-                  </span>
-                </div>
-                <p className="text-gray-600 line-clamp-3">{project.description}</p>
-              </div>
-
-              <div className="mt-4 pt-4 border-t">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div
-                      className="flex items-center text-gray-500 hover:text-blue-600 cursor-pointer"
-                      onClick={(e) => handleInterestClick(e, project)}
-                    >
-                      <Users size={20} className="mr-2" />
-                      <span>{project.interestedDev.length} interested</span>
-                    </div>
-                    
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    Due: {new Date(project.deadline).toLocaleDateString()}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
+          <button
+            onClick={() => setSelectedTab("two")}
+            className={`p-2 bg-gray-400 ${selectedTab === "two" ? "hover:bg-green-500" : ""}`}>
+            Commited Project
+          </button>
         </div>
+
+        {/* My Projects */}
+
+        {
+          selectedTab === "one" ? (<div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-8">My Projects</h1>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {projects.map(project => (
+                <div
+                  key={project._id}
+                  onClick={() => handleProjectClick(project)}
+                  className="bg-white rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition-shadow flex flex-col h-full"
+                >
+                  <div className="flex-grow">
+                    <div className="flex justify-between items-start mb-4">
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        {project.name}
+                      </h2>
+                      <span className="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                        {project.status}
+                      </span>
+                    </div>
+                    <p className="text-gray-600 line-clamp-3">{project.description}</p>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div
+                          className="flex items-center text-gray-500 hover:text-blue-600 cursor-pointer"
+                          onClick={(e) => handleInterestClick(e, project)}
+                        >
+                          <Users size={20} className="mr-2" />
+                          <span>{project.interestedDev.length} interested</span>
+                        </div>
+
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Due: {new Date(project.deadline).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>) : (<div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-8">Contributed Projects</h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {projectGroup.map((project, index) => (
+                <div
+                  key={project._id}
+                  className={`bg-white rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition-shadow flex flex-col
+                    ${expanded === index ? "h-full" : "h-[200px]"} `}
+                >
+                  <div className="flex-grow">
+                    <div className="flex justify-between items-start mb-4">
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        {project.name}
+                      </h2>
+                      <span className="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                        {project.status}
+                      </span>
+                    </div>
+                    <p className="text-gray-600 line-clamp-3">{project.description}</p>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        {
+                          authUser?._id === project?.owner?._id ? (
+                            <div
+                              className="flex items-center text-gray-500 bg-blue-300 px-2 py-1 rounded-xl"
+                            >
+                              owned
+                            </div>
+                          ) : (
+                            <div
+                              className="flex items-center text-gray-500 bg-green-300 px-2 py-1 rounded-xl"
+                            >
+                              contributor
+                            </div>
+                          )
+                        }
+
+                      </div>
+                      <div
+                        onClick={() => setExpanded(index === expanded ? null : index)}
+                        className="text-sm text-gray-400 bg-gray-200 p-1 rounded-full">
+                        <ArrowDown />
+                      </div>
+                    </div>
+                  </div>
+                  {
+                    expanded === index && (
+                      <div className='w-full h-auto bg-gray-100 mt-3 rounded-lg transition transform duration-300  ease-in-out'>
+                        <form action="" className="p-2 flex flex-col gap-3 text-gray-600" onSubmit={SendCodeFile}>
+                          <div className="flex flex-col gap-1 w-full justify-center items-center">
+                            <h1 className="font-extrabold">Submit Your Work</h1>
+                          </div>
+
+                          <div className="flex flex-col gap-1">
+                            <label>Title :</label>
+                            <input type="text" name="title" value={formData.title} onChange={handleChange} className="px-2 py-1 border rounded-md" placeholder="Title" />
+                          </div>
+
+                          <div className="flex flex-col gap-1">
+                            <label>Description :</label>
+                            <input type="text" name="description" value={formData.description} onChange={handleChange} className="px-2 py-1 border rounded-md" placeholder="Descri..." />
+                          </div>
+
+                          <div className="flex flex-col gap-1">
+                            <label>Github Link :</label>
+                            <input type="text" name="githubLink" value={formData.githubLink} onChange={handleChange} className="px-2 py-1 border rounded-md" placeholder="Repo Link" />
+                          </div>
+
+                          <div className="flex flex-col gap-1">
+                            <label>Zip File :</label>
+                            <input type="file" name="zipFile" onChange={handleChange} className="px-2 py-1 border rounded-md" />
+                          </div>
+
+                          <div className="flex flex-col gap-1">
+                            <input type="submit" value="Submit" className="px-2 py-1 bg-blue-300 hover:bg-blue-400 rounded-xl cursor-pointer" />
+                          </div>
+                        </form>
+                      </div>
+                    )
+                  }
+
+
+                </div>
+              ))}
+            </div>
+          </div>)
+        }
+
+
 
         {/* Project Details Modal */}
         {showProjectDetails && selectedProject && (
@@ -175,7 +316,7 @@ const MyProjectDetails = () => {
                         {new Date(selectedProject.deadline).toLocaleDateString()}
                       </p>
                     </div>
-                   <div className='ml-16 '> <MessageSquare className="w-5 h-5 text-primary cursor-pointer" /></div>
+                    <div className='ml-16 '> <MessageSquare className="w-5 h-5 text-primary cursor-pointer" /></div>
                     <div>
                       <span className="font-medium text-gray-600">Tech Stack:</span>
                       <div className="flex flex-wrap gap-2 mt-2">
@@ -286,14 +427,14 @@ const MyProjectDetails = () => {
                           {!dev.isRejected && (
                             <div className="flex space-x-2">
                               <button
-                                onClick={() => handleAccept(dev.userId._id,selectedProject._id)}
+                                onClick={() => handleAccept(dev.userId._id, selectedProject._id)}
                                 className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 flex items-center"
                               >
                                 <Check size={16} className="mr-2" />
                                 Accept
                               </button>
                               <button
-                                onClick={() => handleReject(dev.userId._id,selectedProject._id)}
+                                onClick={() => handleReject(dev.userId._id, selectedProject._id)}
                                 className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 flex items-center"
                               >
                                 <X size={16} className="mr-2" />

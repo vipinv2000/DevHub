@@ -16,7 +16,7 @@ export const getGroupsForSidebar = async (req, res) => {
                     userId: loggedInUserId,
                 }
             }
-        }).select('-interestedDev');
+        }).select('-interestedDev').populate("owner","-field -password -profilePic -action")
 
         res.status(200).json({ success: true, ProjectGroup });
     } catch (error) {
