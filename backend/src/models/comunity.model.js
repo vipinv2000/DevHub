@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { type } from "os";
 
 const comunitySchema = new mongoose.Schema(
     {
@@ -60,6 +61,40 @@ const comunitySchema = new mongoose.Schema(
                     isOwner: {
                         type: Boolean,
                         default: false
+                    }
+                },
+            ],
+            default: []
+        },
+        posts: {
+            type: [
+                {
+                    senderId: {
+                        type: mongoose.Schema.Types.ObjectId,
+                        ref: "User",
+                        required: true,
+                    },
+                    name: {
+                        type: String,
+                    },
+                    image: {
+                        type: String,
+                    },
+                    createdAt: {
+                        type: Date,
+                        default: Date.now,
+                    },
+                    description: {
+                        type: String,
+                        default: false
+                    },
+                    link: {
+                        type: String,
+                        default: false
+                    },
+                    isPost: {
+                        type: Boolean,
+                        default: true
                     }
                 },
             ],

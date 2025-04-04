@@ -628,7 +628,7 @@ export const DoPostLike = async (req, res) => {
 export const addProject = async (req, res) => {
   const userId = req.user._id
   try {
-    const { name, description, deadline, techStack,image } = req.body
+    const { name, description, deadline, techStack, image } = req.body
     let imageUrl;
     if (image) {
       const uploadResponse = await cloudinary.uploader.upload(image);
@@ -638,15 +638,15 @@ export const addProject = async (req, res) => {
 
       name,
       description,
-      image:imageUrl,
+      image: imageUrl,
       owner: userId,
       deadline,
       techStack,
-      contributors:[
+      contributors: [
         {
-          userId:userId,
-          DateTime:new Date(),
-          isOwner:true
+          userId: userId,
+          DateTime: new Date(),
+          isOwner: true
         }
       ]
     })
@@ -679,8 +679,8 @@ export const getProjectList = async (req, res) => {
       isAlreadyContributed: item.contributors.some(dev => dev.userId.toString() === userId.toString()),
       isAlreadyRejected: item.interestedDev.some(dev => dev.userId.toString() === userId.toString() && dev.isRejected === true)
     }));
-     
-     
+
+
     return res.status(200).json({ success: true, projects: updatedProjects });
 
   } catch (error) {
@@ -769,6 +769,9 @@ export const InterestRequestAccept = async (req, res) => {
   const userId = req.user._id;
   const { devId ,projectId} = req.params;
 
+  console.log("userId",userId,"devId",devId);
+  
+
   try {
     const OwnerProject = await Project.findOne({ owner: userId,_id:projectId });
 
@@ -779,6 +782,9 @@ export const InterestRequestAccept = async (req, res) => {
     const FindIndexContributors = OwnerProject.contributors.findIndex(
       (item) => item.userId.toString() === devId.toString()
     );
+
+    console.log("FindIndexContributors",FindIndexContributors);
+    
 
     if (FindIndexContributors !== -1) {
       return res.status(400).json({ success: false, message: "User Already In The Group" });
@@ -816,17 +822,17 @@ export const ownerMyProjects = async (req, res) => {
   const userId = req.user._id;
   try {
 
-    const ListOfMyProjects = await Project.find({owner:userId}) .populate("interestedDev.userId", "fullName email profilePic").populate("contributors.userId", "fullName email profilePic")
-    if(ListOfMyProjects.length <= 0 ){
+    const ListOfMyProjects = await Project.find({ owner: userId }).populate("interestedDev.userId", "fullName email profilePic").populate("contributors.userId", "fullName email profilePic")
+    if (ListOfMyProjects.length <= 0) {
       return res.status(404).json({ success: false, message: "No Projects Found" });
     }
 
-    const Updated_List = ListOfMyProjects.map((item)=>({
-        ...item.toObject(),
-        interestedDev:item.interestedDev.filter(dev=>dev.isRejected === false)
+    const Updated_List = ListOfMyProjects.map((item) => ({
+      ...item.toObject(),
+      interestedDev: item.interestedDev.filter(dev => dev.isRejected === false)
     }))
 
-    if(Updated_List.length <= 0 ){
+    if (Updated_List.length <= 0) {
       return res.status(404).json({ success: false, message: "No Projects Found or No new Requests Found" });
     }
 
