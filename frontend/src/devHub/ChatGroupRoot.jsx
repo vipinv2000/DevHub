@@ -4,7 +4,7 @@ import ProjectChatContainer from './ProjectGroupChatContainer.jsx'
 
 const ChatGroupRoot = () => {
   return <>
-  <div className='flex h-screen'>
+  <div className='flex h-7'>
     <ProjectGroupSidebar/>
     <ProjectChatContainer/>
   </div>

@@ -44,13 +44,12 @@ const ProjectGroupSidebar = () => {
             </button>
           ))}
 
-          {projectGroup.length === 0 && (
-            <div className="text-center text-zinc-500 py-4">No online users</div>
-          )}
-        </div>
-      </aside>
-    </div>
-  );
-};
+{projectGroup.length === 0 && (
+          <div className="text-center text-zinc-500 py-4">No Groups </div>
+        )}
+      </div>
+    </aside>
+  </div>
+)};
 
 export default ProjectGroupSidebar;

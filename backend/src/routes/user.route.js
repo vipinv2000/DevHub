@@ -45,8 +45,8 @@ router.get("/DoPostLike/:postId/:collectionId", protectRoute, DoPostLike)
 router.post("/addProject", protectRoute, addProject)
 router.get("/getProjectList", protectRoute, getProjectList)
 router.get("/sendInterestRequest/:projectId", protectRoute, sendInterestRequest)
-router.get("/InterestRequestReject/:devId", protectRoute, InterestRequestReject)
-router.get("/InterestRequestAccept/:devId", protectRoute, InterestRequestAccept)
+router.get("/InterestRequestReject/:devId/:projectId", protectRoute, InterestRequestReject)
+router.get("/InterestRequestAccept/:devId/:projectId", protectRoute, InterestRequestAccept)
 router.get("/ownerMyProjects",protectRoute,ownerMyProjects)
 
 
