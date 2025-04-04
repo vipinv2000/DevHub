@@ -13,13 +13,13 @@ const MyProjectDetails = () => {
   const [showProjectDetails, setShowProjectDetails] = useState(false);
   const [projects, setprojects] = useState([]);
   const [selectedTab, setSelectedTab] = useState("one")
-  const { getProjectGroup, projectGroup } = ProjectGroupSidebarFunction();
+  const { getProjectGroup, projectGroup, Submit_CodeFile_To_Owner } = ProjectGroupSidebarFunction();
   const [expanded, setExpanded] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     githubLink: "",
-    zipFile: null,
+    zipFile: null, // Store file separately
   });
 
   const { authUser } = useAuthStore();
@@ -107,17 +107,65 @@ const MyProjectDetails = () => {
   };
 
   const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
+    const { name, type, value, files } = e.target;
+
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "file" ? files[0] : value,
+      [name]: type === "file" ? files[0] : value, // Store file separately
     }));
   };
 
-  const SendCodeFile = (e) => {
+  const SendCodeFile = async (e, id) => {
     e.preventDefault();
-    console.log("Form Data Submitted:", formData);
-    
+
+    if (!id) {
+      console.error("Project ID is missing");
+      return;
+    }
+
+    const submissionData = new FormData();
+    submissionData.append("title", formData.title);
+    submissionData.append("description", formData.description);
+    submissionData.append("githubLink", formData.githubLink);
+
+    if (formData.zipFile) {
+      submissionData.append("zipFile", formData.zipFile);
+    }else{
+      toast.error("Zip file needed")
+      setExpanded(null)
+    }
+
+    // Debugging: Properly logging FormData values
+    console.log("Submitting FormData:");
+    for (let [key, value] of submissionData.entries()) {
+      console.log(`${key}:`, value);
+    }
+
+    try {
+      const response = await axiosInstance.post(
+        `/projectMessage/CodeSubmission/${id}`,
+        submissionData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("Submission Successful:", response.data);
+      toast.success(response?.data?.message)
+
+      setFormData({
+        title: "",
+        description: "",
+        githubLink: "",
+        zipFile: null,
+      })
+      setExpanded(null)
+
+    } catch (error) {
+      console.error("Error submitting code file:", error.response?.data || error.message);
+    }
   };
 
 
@@ -234,33 +282,66 @@ const MyProjectDetails = () => {
                   {
                     expanded === index && (
                       <div className='w-full h-auto bg-gray-100 mt-3 rounded-lg transition transform duration-300  ease-in-out'>
-                        <form action="" className="p-2 flex flex-col gap-3 text-gray-600" onSubmit={SendCodeFile}>
+                        <form
+                          className="p-2 flex flex-col gap-3 text-gray-600"
+                          onSubmit={(e) => SendCodeFile(e, project._id)}
+                        >
                           <div className="flex flex-col gap-1 w-full justify-center items-center">
                             <h1 className="font-extrabold">Submit Your Work</h1>
                           </div>
 
                           <div className="flex flex-col gap-1">
                             <label>Title :</label>
-                            <input type="text" name="title" value={formData.title} onChange={handleChange} className="px-2 py-1 border rounded-md" placeholder="Title" />
+                            <input
+                              type="text"
+                              name="title"
+                              value={formData.title}
+                              onChange={handleChange}
+                              className="px-2 py-1 border rounded-md"
+                              placeholder="Title"
+                            />
                           </div>
 
                           <div className="flex flex-col gap-1">
                             <label>Description :</label>
-                            <input type="text" name="description" value={formData.description} onChange={handleChange} className="px-2 py-1 border rounded-md" placeholder="Descri..." />
+                            <input
+                              type="text"
+                              name="description"
+                              value={formData.description}
+                              onChange={handleChange}
+                              className="px-2 py-1 border rounded-md"
+                              placeholder="Description..."
+                            />
                           </div>
 
                           <div className="flex flex-col gap-1">
                             <label>Github Link :</label>
-                            <input type="text" name="githubLink" value={formData.githubLink} onChange={handleChange} className="px-2 py-1 border rounded-md" placeholder="Repo Link" />
+                            <input
+                              type="text"
+                              name="githubLink"
+                              value={formData.githubLink}
+                              onChange={handleChange}
+                              className="px-2 py-1 border rounded-md"
+                              placeholder="Repo Link"
+                            />
                           </div>
 
                           <div className="flex flex-col gap-1">
                             <label>Zip File :</label>
-                            <input type="file" name="zipFile" onChange={handleChange} className="px-2 py-1 border rounded-md" />
+                            <input
+                              type="file"
+                              name="zipFile"
+                              onChange={handleChange}
+                              className="px-2 py-1 border rounded-md"
+                            />
                           </div>
 
                           <div className="flex flex-col gap-1">
-                            <input type="submit" value="Submit" className="px-2 py-1 bg-blue-300 hover:bg-blue-400 rounded-xl cursor-pointer" />
+                            <input
+                              type="submit"
+                              value="Submit"
+                              className="px-2 py-1 bg-blue-300 hover:bg-blue-400 rounded-xl cursor-pointer"
+                            />
                           </div>
                         </form>
                       </div>

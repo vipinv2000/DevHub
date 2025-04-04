@@ -14,13 +14,19 @@ import projectMessageRoutes from './routes/projectMessage.route.js'
 import comunityRoutes from './routes/comunity.route.js'
 
 import { app, server } from "./lib/socket.js";
+import fileUpload from 'express-fileupload';
+
+
 
 dotenv.config();
 
 const PORT = process.env.PORT;
 const __dirname = path.resolve();
 
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json()); // Parses JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parses form-data (not files)
+// Enable express-fileupload
+app.use(fileUpload());
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
 app.use(
@@ -35,6 +41,7 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/userdash", userRoutes)
 app.use("/api/projectMessage", projectMessageRoutes)
 app.use("/api/comunity", comunityRoutes)
+app.use(fileUpload());
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));

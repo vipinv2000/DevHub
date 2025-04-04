@@ -81,7 +81,8 @@ const projectSchema = new mongoose.Schema(
               {
                 title: {
                   type: String,
-                  required: true
+                  required: true,
+                  trim: true
                 },
                 description: {
                   type: String,
@@ -93,39 +94,35 @@ const projectSchema = new mongoose.Schema(
                 },
                 files: [
                   {
-                    filename: String,
-                    path: String,
-                    mimetype: String,
-                    size: Number,
-                    uploadedAt: {
-                      type: Date,
-                      default: () => new Date()
-                    }
+                    filename: { type: String, required: true },
+                    path: { type: String, required: true },
+                    mimetype: { type: String, required: true },
+                    size: { type: Number, required: true },
+                    uploadedAt: { type: Date, default: Date.now }
                   }
                 ],
                 completionPercentage: {
                   type: Number,
                   required: true,
                   min: 0,
-                  max: 100
+                  max: 100,
+                  default: 0
                 },
                 submittedAt: {
                   type: Date,
-                  default: () => new Date()
+                  default: Date.now
                 },
                 comments: [
                   {
-                    content: String,
-                    createdAt: {
-                      type: Date,
-                      default: () => new Date()
-                    }
+                    content: { type: String, required: true, trim: true },
+                    createdAt: { type: Date, default: Date.now }
                   }
                 ]
               }
             ],
             default: []
           }
+
         }
       ],
       default: []
