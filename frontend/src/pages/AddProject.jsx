@@ -92,10 +92,10 @@ const AddProject = () => {
   };
 
   return (
-    <div className="bg-gray-200 min-h-screen flex items-center justify-center">
-  <div className="max-w-2xl w-full bg-gray-100 p-8 rounded-lg shadow-lg">
+    <div className="bg-gray-500 min-h-screen flex items-center justify-center">
+  <div className="max-w-2xl w-full bg-gray-100 p-8 -mt-[7%] rounded-lg shadow-lg">
     <h1 className="text-xl font-bold text-gray-800 mb-6 text-center">Add Project</h1>
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 text-black">
       
       {/* Project Name */}
       <div className="form-control">
@@ -104,7 +104,7 @@ const AddProject = () => {
           <User className="absolute left-3 top-3 text-gray-500" size={18} />
           <input
             type="text"
-            className="input input-bordered w-full pl-10 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+            className="input text-black input-bordered w-full pl-10 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
             placeholder="Enter project name"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -148,7 +148,7 @@ const AddProject = () => {
           <Calendar className="absolute left-3 top-3 text-gray-500" size={18} />
           <input
             type="date"
-            className="input input-bordered w-full pl-10 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+            className="input input-bordered w-full text-black pl-10 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
             value={formData.deadline}
             onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
           />

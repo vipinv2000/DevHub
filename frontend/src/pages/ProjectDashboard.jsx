@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { axiosInstance } from '../lib/axios.js';
 import toast from 'react-hot-toast';
-import { Button } from 'antd';
+import { Button, Rate } from 'antd';
 
 const ProjectDashboard = () => {
   const [listOpenings, setListOpenings] = useState([]);
@@ -31,8 +31,7 @@ const ProjectDashboard = () => {
   };
 
   const handleMessage = (projectId) => {
-    // Functionality to open messaging for the project
-    console.log("Opening messages for project:", projectId);
+   
     toast.success("Opening chat...");
   };
 
@@ -51,6 +50,7 @@ const ProjectDashboard = () => {
             <p className="text-gray-600"><strong>Deadline:</strong> {new Date(project.deadline).toDateString()}</p>
             <p className="text-gray-600"><strong>Tech Stack:</strong> {project.techStack.join(', ')}</p>
             <p className="text-gray-600"><strong>Owner:</strong> {project.owner.fullName}</p>
+            <p className="text-gray-600"><strong>Rating:</strong> <Rate allowHalf disabled defaultValue={project.overallRating} /></p>
 
             {/* Status Messages & Buttons */}
             {project.isAlreadyRejected ? (

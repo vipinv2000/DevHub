@@ -104,7 +104,9 @@ const ProjectChatContainer = () => {
       </div>
 
       {/* Input Field */}
-      <ProjectMessageInput />
+  <div>
+  <ProjectMessageInput />
+  </div>
     </div>
   );
 };

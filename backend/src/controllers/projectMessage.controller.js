@@ -130,3 +130,64 @@ export const getProjectMessages = async (req, res) => {
     }
 };
 
+export const rateProject = async (req, res) => {
+    try {
+      const { projectId } = req.params;
+      const { rating, comment } = req.body;
+      console.log("req.body",req.body);
+      
+      const userId = req.user._id; 
+  
+      if (rating < 0 || rating > 5) {
+        return res.status(400).json({ message: 'Rating must be between 0 and 5.' });
+      }
+  
+      const project = await Project.findById(projectId);
+      if (!project) {
+        return res.status(404).json({ message: 'Project not found' });
+      }
+  
+      const contributor = project.contributors.find((c) =>
+        c.userId.toString() === userId.toString()
+      );
+  
+      if (!contributor) {
+        return res.status(403).json({ message: 'You are not a contributor to this project.' });
+      }
+  
+      contributor.rating = rating;
+      contributor.ratingComment = comment || '';
+      contributor.isRated=true
+      await project.save(); 
+  
+      await project.updateOverallRating(); 
+  
+      res.status(200).json({ message: 'Rating submitted successfully.', overallRating: project.overallRating });
+  
+    } catch (error) {
+      console.error('Error rating project:', error);
+      res.status(500).json({ message: 'Server error while rating project.' });
+    }
+}
+
+export const updateStatus =async(req,res)=>{
+    const { projectId,status } = req.params;
+    
+  
+    try {
+      const project = await Project.findByIdAndUpdate(
+        projectId,
+        { status },
+        { new: true }
+      );
+  
+      if (!project) {
+        return res.status(404).json({ message: 'Project not found' });
+      }
+  
+      res.status(200).json({ message: 'Status updated', project });
+    } catch (error) {
+      console.error('Error updating status:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }

@@ -13,10 +13,13 @@ const ChatGroupRoot = () => {
    
     
   return <>
-  <div className='flex h-screen '>
-    <ProjectGroupSidebar/>
-    {selectedProjectGroup?<ProjectChatContainer/>:<NoChatSelected/>}
+ <div className="flex h-[100%] overflow-hidden">
+  <ProjectGroupSidebar />
+  <div className="flex-1 overflow-hidden">
+    {selectedProjectGroup ? <ProjectChatContainer /> : <NoChatSelected />}
   </div>
+</div>
+
   </>
 }
 

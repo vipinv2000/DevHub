@@ -53,8 +53,8 @@ const CreateCommunity = () => {
   };
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center p-6">
-      <div className="bg-gray-800 p-6 rounded-2xl shadow-lg w-full max-w-md">
+    <div className="bg-gray-900 text-white min-h-screen flex flex-col items-center  justify-center p-6">
+      <div className="bg-gray-800 p-6 rounded-2xl shadow-lg w-full max-w-md -mt-[6%]">
         <h2 className="text-2xl font-semibold text-white text-center mb-6">
           Create Community
         </h2>

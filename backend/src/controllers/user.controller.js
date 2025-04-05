@@ -736,10 +736,10 @@ export const sendInterestRequest = async (req, res) => {
 
 export const InterestRequestReject = async (req, res) => {
   const userId = req.user._id;
-  const { devId } = req.params;
+  const { devId ,projectId} = req.params;
 
   try {
-    const OwnerProject = await Project.findOne({ owner: userId });
+    const OwnerProject = await Project.findOne({ owner: userId,_id:projectId  });
 
     if (!OwnerProject) {
       return res.status(400).json({ success: false, message: "No Project Found" });
