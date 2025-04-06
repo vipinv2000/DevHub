@@ -1,6 +1,6 @@
 import React from 'react'
-import market from '../../assets/marketing.png'
-import market1 from '../../assets/marketing1.png'
+import market from '../../assets/Marketing.png'
+import market1 from '../../assets/Marketing1.png'
 import styled from 'styled-components';
 
 function About() {
