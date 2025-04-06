@@ -14,6 +14,7 @@
     "antd": "^5.24.6",
     "axios": "^1.7.7",
     "chat-app": "file:..",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.5.0",
     "lucide-react": "^0.459.0",
     "nsfwjs": "^4.2.1",

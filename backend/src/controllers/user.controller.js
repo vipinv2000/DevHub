@@ -1,4 +1,3 @@
-import { log } from 'util';
 import { Request_Mode } from '../../utils/Request_methods.js';
 import { techStack } from '../../utils/tecStacks.js';
 import Post from '../models/post.model.js';
@@ -771,13 +770,13 @@ export const InterestRequestReject = async (req, res) => {
 
 export const InterestRequestAccept = async (req, res) => {
   const userId = req.user._id;
-  const { devId ,projectId} = req.params;
+  const { devId, projectId } = req.params;
 
-  console.log("userId",userId,"devId",devId);
-  
+  console.log("userId", userId, "devId", devId);
+
 
   try {
-    const OwnerProject = await Project.findOne({ owner: userId,_id:projectId });
+    const OwnerProject = await Project.findOne({ owner: userId, _id: projectId });
 
     if (!OwnerProject) {
       return res.status(400).json({ success: false, message: "No Project Found" });
@@ -787,8 +786,8 @@ export const InterestRequestAccept = async (req, res) => {
       (item) => item.userId.toString() === devId.toString()
     );
 
-    console.log("FindIndexContributors",FindIndexContributors);
-    
+    console.log("FindIndexContributors", FindIndexContributors);
+
 
     if (FindIndexContributors !== -1) {
       return res.status(400).json({ success: false, message: "User Already In The Group" });
@@ -839,6 +838,9 @@ export const ownerMyProjects = async (req, res) => {
     if (Updated_List.length <= 0) {
       return res.status(404).json({ success: false, message: "No Projects Found or No new Requests Found" });
     }
+
+    console.log("Updated_List",JSON.stringify(Updated_List,null,2));
+    
 
     return res.status(200).json({ success: true, Updated_List });
 

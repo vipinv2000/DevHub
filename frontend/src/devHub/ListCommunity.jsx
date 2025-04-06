@@ -3,11 +3,12 @@ import axios from 'axios';
 import { axiosInstance } from '../lib/axios';
 import { MessageSquare, MessageSquareText, Plus } from 'lucide-react';
 import { MdAddBox } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const CommunityList = () => {
   const [communities, setCommunities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const Navigate = useNavigate()
 
   useEffect(() => {
     const fetchCommunities = async () => {
@@ -46,19 +47,19 @@ const CommunityList = () => {
 
   if (loading) return <p className="text-center">Loading communities...</p>;
 
-if (communities.length === 0) {
-  return <>
-  <h2 className="text-center text-gray-500 pt-10">No communities available.</h2>;
-  <div className='fixed bottom-10 right-10 bg-gray-800 rounded-full p-3 shadow-lg hover:scale-105'>
+  if (communities.length === 0) {
+    return <>
+      <h2 className="text-center text-gray-500 pt-10">No communities available.</h2>;
+      <div className='fixed bottom-10 right-10 bg-gray-800 rounded-full p-3 shadow-lg hover:scale-105'>
         <Link
           to="/devhub/CreateCommunity"
           className=" h-fit text-white bg-black rounded-full  shadow-lg text-[20px] "
         >
-          <Plus size={40}/>
+          <Plus size={40} />
         </Link>
       </div>
-  </>
-}
+    </>
+  }
 
 
   return (
@@ -83,8 +84,8 @@ if (communities.length === 0) {
                       Member
                     </span>
                   </div>
-                  <div className='cursor-pointer hover:scale-x-110'>
-                  <MessageSquareText color='gray' />
+                  <div className='cursor-pointer hover:scale-x-110' onClick={() => Navigate('/devhub/community')}>
+                    <MessageSquareText color='gray' />
                   </div>
                 </div>
               ) : (
@@ -98,14 +99,14 @@ if (communities.length === 0) {
             </div>
           </div>
         ))}
-        
+
       </div>
       <div className='fixed bottom-10 right-10 bg-gray-800 rounded-full p-3 shadow-lg hover:scale-105'>
         <Link
           to="/devhub/CreateCommunity"
           className=" h-fit text-white bg-black rounded-full  shadow-lg text-[20px] "
         >
-          <Plus size={40}/>
+          <Plus size={40} />
         </Link>
       </div>
     </div>

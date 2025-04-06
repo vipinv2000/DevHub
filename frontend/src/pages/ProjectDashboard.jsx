@@ -3,11 +3,14 @@ import { axiosInstance } from '../lib/axios.js';
 import toast from 'react-hot-toast';
 import { Button, Rate } from 'antd';
 import { Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ProjectDashboard = () => {
   const [listOpenings, setListOpenings] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [showReviews, setShowReviews] = useState(false);
+
+  const Navigate = useNavigate()
 
   const fetchlist = async () => {
     try {
@@ -42,7 +45,7 @@ const ProjectDashboard = () => {
 
   const handleMessage = (projectId) => {
    
-    toast.success("Opening chat...");
+     return toast.success("Opening chat...");
   };
 
   return (
@@ -52,7 +55,7 @@ const ProjectDashboard = () => {
         {listOpenings.map((project) => (
           <div
             key={project._id}
-            className={`relative p-5 rounded-xl    shadow-2xl hover:shadow-xl transition-transform transform  flex flex-col justify-between hover:scale-[1.02] ${project.isAlreadyRejected ? 'opacity-50' : ' bg-opacity-40 backdrop-blur-lg border border-white'}`}
+            className={`relative p-5 rounded-xl    shadow-md hover:shadow-xl transition-transform transform  flex flex-col justify-between hover:scale-[1.02] ${project.isAlreadyRejected ? 'opacity-50' : ' bg-opacity-40 backdrop-blur-lg border border-white'}`}
           >
             <h2 className="text-xl font-bold text-gray-900 mb-2">{project.name}</h2>
             <p className="text-gray-600 line-clamp-2 mb-2">{project.description}</p>
@@ -80,7 +83,9 @@ const ProjectDashboard = () => {
                 <h2 className="text-green-600 font-bold  mt-2">You are already in</h2>
                 <button
                   className="mt-4 w-full py-2 bg-slate-700 text-white rounded-lg font-semibold shadow-md hover:bg-green-700 transition"
-                  onClick={() => handleMessage(project._id)}
+                  onClick={() => {handleMessage(project._id)
+                    Navigate("/devhub/ChatGroupRoot")
+                  }}
                 >
                   Message
                 </button>

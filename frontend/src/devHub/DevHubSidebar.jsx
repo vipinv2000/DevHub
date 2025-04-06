@@ -60,7 +60,7 @@ const DevHubSidebar = () => {
             name: 'Settings',
             icon: Settings,
             id: 'settings',
-            path: '/devhub/ChatGroupRoot',
+            
           },
         ].map(item => (
           <button

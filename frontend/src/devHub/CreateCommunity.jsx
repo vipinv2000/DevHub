@@ -44,7 +44,7 @@ const CreateCommunity = () => {
 
       toast.success('Post added successfully!');
       setFormData({});
-      navigate('/devhub');
+      navigate('/devhub/CommunityList');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Something went wrong');
     } finally {

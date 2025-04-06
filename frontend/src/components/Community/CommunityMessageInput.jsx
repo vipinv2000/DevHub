@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Image, Plus, Send, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { CommunityGroupSidebarFunction } from "../../store/communityGroupStore";
+import { axiosInstance } from "../../lib/axios";
 
 const CommunityMessageInput = () => {
   const [text, setText] = useState("");
@@ -15,11 +16,14 @@ const CommunityMessageInput = () => {
     image: '',
     link: ''
   });
+  const [image, setImage] = useState("")
+
+  const { slectedCommunityGroup, getCommunitytMessages } = CommunityGroupSidebarFunction();
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     if (!file.type.startsWith("image/")) {
       toast.error("Please select an image file");
       return;
@@ -47,7 +51,7 @@ const CommunityMessageInput = () => {
         image: imagePreview,
       });
 
-    
+
       setText("");
       setImagePreview(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -57,22 +61,43 @@ const CommunityMessageInput = () => {
     }
   };
 
+
+
   const handlePostSubmit = async (e) => {
+    console.log("slectedCommunityGroup", slectedCommunityGroup);
+
     e.preventDefault();
     if (!postForm.name.trim() || !postForm.description.trim()) {
       toast.error("Name and description are required");
       return;
     }
-
     try {
-                                                 // ivede API postForm passcheyyanam
+
+  const finalofdata={...postForm,image:image}
+  console.log("finalofdata",finalofdata);
+  
+
+      const res = await axiosInstance.post(`/comunity/sendCommunityPost/${slectedCommunityGroup._id}`, finalofdata)                                          // ivede API postForm passcheyyanam
       toast.success("Post created successfully");
       setShowPostModal(false);
       setPostForm({ name: '', description: '', image: '', link: '' });
+      getCommunitytMessages(slectedCommunityGroup._id)
     } catch (error) {
       console.error("Failed to create post:", error);
       toast.error("Failed to create post");
     }
+  };
+
+  const handleImageChange2 = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+      const base64Image = reader.result;
+      setImage(base64Image);
+      
+    };
   };
 
   return (
@@ -139,7 +164,7 @@ const CommunityMessageInput = () => {
         </button>
       </form>
 
-     
+
       {showPostModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg w-full max-w-md">
@@ -182,9 +207,9 @@ const CommunityMessageInput = () => {
                   Image URL
                 </label>
                 <input
-                  type="url"
+                  type="file"
                   value={postForm.image}
-                  onChange={(e) => setPostForm({ ...postForm, image: e.target.value })}
+                  onChange={(e) => handleImageChange2(e)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>

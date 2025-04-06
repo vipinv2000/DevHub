@@ -77,7 +77,7 @@ export const ProjectGroupSidebarFunction = create((set, get) => ({
   unsubscribeFromProjectMessages: () => {
     socket.off("newMessage");
   },
-  Submit_CodeFile_To_Woner : async (item)=>{
+  Submit_CodeFile_To_Owner : async (item)=>{
     
   }
 }));
