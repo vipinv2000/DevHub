@@ -68,6 +68,21 @@ const projectSchema = new mongoose.Schema(
             required: true,
             index: true
           },
+          rating: {
+            type: Number,
+            default: 0,
+            min: 0,
+            max: 5
+          },
+          ratingComment: {
+            type: String,
+            trim: true,
+            default: ''
+          },
+          isRated:{
+              type:Boolean,
+              default:false
+          },
           DateTime: {
             type: Date,
             default: () => new Date()
@@ -134,10 +149,31 @@ const projectSchema = new mongoose.Schema(
         }
       ],
       default: []
+    },
+    overallRating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5
     }
   },
   { timestamps: true }
 );
+
+projectSchema.methods.updateOverallRating = async function () {
+  const ratings = this.contributors
+    .map(c => c.rating)
+    .filter(r => typeof r === 'number' && r > 0); // Changed from >= 0 to > 0
+
+  if (ratings.length === 0) {
+    this.overallRating = 0;
+  } else {
+    const sum = ratings.reduce((acc, val) => acc + val, 0);
+    this.overallRating = Math.round((sum / ratings.length) * 10) / 10;
+  }
+
+  return this.save();
+};
 
 const Project = mongoose.model("Project", projectSchema);
 

@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { Phone, X } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import { ProjectGroupSidebarFunction } from "../store/projectGroupStore.js";
@@ -38,7 +38,7 @@ useEffect(() => {
 
         {/* Close button */}
         <button onClick={() => setSelectedProgectGroup(null)}>
-          <X />
+          <Phone className="mr-2" />
         </button>
       </div>
       

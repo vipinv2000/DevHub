@@ -660,7 +660,7 @@ export const getProjectList = async (req, res) => {
   const userId = req.user._id;
 
   try {
-    const userData = await User.findById(userId);
+    const userData = await User.findById(userId)
     if (!userData) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
@@ -670,13 +670,15 @@ export const getProjectList = async (req, res) => {
     const matchedProjects = await Project.find({
       owner: { $ne: userId },
       techStack: { $in: userSkills },
-    }).populate("owner", "-password -field -action");
+    }).populate("owner", "-password -field -action").populate("contributors.userId","-password  -field -action")
+    console.log("user",userId);
+    
 
     const updatedProjects = matchedProjects.map((item) => ({
       ...item.toObject(),
-      isAlreadyRequested: item.interestedDev.some(dev => dev.userId.toString() === userId.toString()),
-      isAlreadyContributed: item.contributors.some(dev => dev.userId.toString() === userId.toString()),
-      isAlreadyRejected: item.interestedDev.some(dev => dev.userId.toString() === userId.toString() && dev.isRejected === true)
+      isAlreadyRequested: item.interestedDev.some(dev => dev.userId._id.toString() === userId.toString()),
+      isAlreadyContributed: item.contributors.some(dev => dev.userId._id.toString() === userId.toString()),
+      isAlreadyRejected: item.interestedDev.some(dev => dev.userId._id.toString() === userId.toString() && dev.isRejected === true)
     }));
 
 
@@ -704,6 +706,8 @@ export const sendInterestRequest = async (req, res) => {
     const alreadyInterestedDev = selectedProject.interestedDev.findIndex(
       (item) => item.userId.toString() === userId.toString()
     );
+  
+    
 
     if (alreadyInterestedDev !== -1) {
       return res.status(400).json({ success: false, message: "You have already requested to join this project" });
@@ -712,7 +716,7 @@ export const sendInterestRequest = async (req, res) => {
     const alreadyContributor = selectedProject.contributors.findIndex(
       (item) => item.userId.toString() === userId.toString()
     );
-
+    console.log("alreadyContributor",alreadyContributor);
     if (alreadyContributor !== -1) {
       return res.status(400).json({ success: false, message: "You are already a part of this project" });
     }
@@ -735,10 +739,10 @@ export const sendInterestRequest = async (req, res) => {
 
 export const InterestRequestReject = async (req, res) => {
   const userId = req.user._id;
-  const { devId } = req.params;
+  const { devId ,projectId} = req.params;
 
   try {
-    const OwnerProject = await Project.findOne({ owner: userId });
+    const OwnerProject = await Project.findOne({ owner: userId,_id:projectId  });
 
     if (!OwnerProject) {
       return res.status(400).json({ success: false, message: "No Project Found" });
