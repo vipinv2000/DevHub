@@ -77,9 +77,7 @@ export const signup = async (req, res) => {
 
     return res.status(201).json({
       _id: newUser._id,
-      fullName: newUser.fullName,
-      email: newUser.email,
-      profilePic: newUser.profilePic,
+
       message: `OTP send to ${newUser.email}. Please check`
     });
 
