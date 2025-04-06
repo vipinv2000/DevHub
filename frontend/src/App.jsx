@@ -30,6 +30,14 @@ import ChatGroupRoot from "./devHub/ChatGroupRoot.jsx";
 import CreateCommunity from "./devHub/CreateCommunity.jsx";
 import CommunityList from "./devHub/ListCommunity.jsx";
 import CommunityRoot from "./components/Community/communityRoot.jsx";
+import LandingPage from "./devFollow/LandingPage.jsx";
+
+
+import Educonnect from'./devFollow/Educonnect/Latest.jsx';
+import AboutPage from './devFollow/Educonnect/AboutPage.jsx';
+import Colleges from './devFollow/Educonnect/Colleges';
+import CoursesPage from'./devFollow/Educonnect/CoursesPage';
+import Pathways from './devFollow/Educonnect/Pathways';
 
 
 const App = () => {
@@ -53,7 +61,7 @@ const App = () => {
 
 {!["/", "/add-story", "/add-post", "/chooseDeveloper", "/InteractedUsersList", "/MyProjectDetails","/devhub"].includes(location.pathname) &&
     !location.pathname.startsWith("/devProfile/") &&
-    !location.pathname.startsWith("/devhub") && <Navbar />}
+    !location.pathname.startsWith("/devhub") && !location.pathname.startsWith("/devFlow") &&<Navbar />}
 
 
 
@@ -92,6 +100,19 @@ const App = () => {
   <Route path="CommunityList" element={<CommunityList />} />
   <Route path="community" element={<CommunityRoot />} />
   
+
+</Route>
+
+<Route
+  path="/devFlow"
+ >
+  <Route index element={<LandingPage />} />
+  <Route path="Educonnect" element={<Educonnect/>} />
+      <Route path="about" element={<AboutPage/>} />
+      <Route path="colleges" element={<Colleges/>} />
+      <Route path="coursespage" element={<CoursesPage/>} />
+      <Route path="pathways" element={<Pathways/>} />
+ 
 
 </Route>
 
