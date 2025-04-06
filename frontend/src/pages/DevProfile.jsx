@@ -218,7 +218,7 @@ const DevProfile = () => {
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="text-gray-300' text-center ">No followers  found</div>
+                                    <div className="text-gray-300 text-center ">No followers  found</div>
                                 )
                             }
 
