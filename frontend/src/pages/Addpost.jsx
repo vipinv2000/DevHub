@@ -1,21 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
 import { toast } from 'react-hot-toast';
 import { FaLock, FaGlobe } from 'react-icons/fa';
 import { axiosInstance } from '../lib/axios';
 import { useNavigate } from 'react-router-dom';
+import Switch from '../components/togle';
+import { SwitchCameraIcon } from 'lucide-react';
 
 const AddPost = () => {
   const { authUser } = useAuthStore();
   const [caption, setCaption] = useState('');
   const [image, setImage] = useState(null);
   const [description, setDescription] = useState('');
-  const [visibility, setVisibility] = useState('public'); // Default: Public
+  const [visibility, setVisibility] = useState(false); 
+  const [isJob, setIsJob] = useState(false);
+
   const [formData, setFormData] = useState({
-    caption:'',
-    description:'',
-    image:'',
-    visibility:''
+    caption: '',
+    description: '',
+    image: '',
+    visibility: '',
+    isJob: '',
   });
   const navigate = useNavigate();
 
@@ -28,28 +33,31 @@ const AddPost = () => {
     reader.onload = async () => {
       const base64Image = reader.result;
       console.log(base64Image);
-      
+
       setImage(base64Image);
     };
   };
-     console.log("vis",visibility);
-     
+  console.log('vis', visibility);
+  
+  useEffect(() => {
+      
+  }, [isJob]);
+
   // Handle Form Submission
   const handleSubmit = async e => {
     e.preventDefault();
 
-   
 
-  
     try {
-      const finalData = { 
-        caption: formData.caption, 
-        description: formData.description, 
-        image: image, 
-        visibility: visibility 
+      const finalData = {
+        caption: formData.caption,
+        description: formData.description,
+        image: image,
+        visibility: visibility,
+        isJob: isJob,
       };
-      console.log("finaldata",finalData);
-      
+      console.log('finaldata', finalData);
+
       await axiosInstance.post('/userdash/addpost', finalData);
 
       toast.success('Post added successfully!');
@@ -57,7 +65,7 @@ const AddPost = () => {
       setImage('');
       setDescription('');
       setVisibility('public');
-      navigate('/')
+      navigate('/');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Something went wrong');
     }
@@ -77,7 +85,9 @@ const AddPost = () => {
             rows="3"
             placeholder="Write a caption..."
             value={formData.caption}
-            onChange={e => setFormData({ ...formData, caption: e.target.value })}
+            onChange={e =>
+              setFormData({ ...formData, caption: e.target.value })
+            }
           />
 
           {/* Description */}
@@ -86,7 +96,9 @@ const AddPost = () => {
             rows="2"
             placeholder="Write a description (optional)..."
             value={formData.description}
-            onChange={e => setFormData({ ...formData, description: e.target.value })}
+            onChange={e =>
+              setFormData({ ...formData, description: e.target.value })
+            }
           />
 
           {/* Image Upload */}
@@ -97,20 +109,27 @@ const AddPost = () => {
             onChange={handleImageChange}
           />
 
-          {/* Visibility Toggle */}
-          <div className="flex items-center justify-between bg-gray-700 p-3 rounded-lg border border-gray-600">
-            <span className="text-white">Visibility:</span>
-            <button
-              type="button"
-              className="flex items-center gap-2 text-white p-2 rounded-lg transition bg-blue-600 hover:bg-blue-700"
-              onClick={() =>
-                setVisibility(visibility === 'public' ? 'private' : 'public')
-              }
-            >
-              {visibility === 'public' ? <FaLock /> : <FaGlobe />}
-              {visibility === 'public' ? 'Private' : 'Public'}
-            </button>
+          <div className="flex items-center gap-4">
+            <span className="font-extrabold font-serif">Job</span>
+            <Switch checked={isJob} onChange={() => setIsJob(prev => !prev)} />
           </div>
+
+          {/* Visibility Toggle */}
+          {!isJob && (
+            <div className="flex items-center justify-between bg-gray-700 p-3 rounded-lg border border-gray-600">
+              <span className="text-white">Visibility:</span>
+              <button
+                type="button"
+                className="flex items-center gap-2 text-white p-2 rounded-lg transition bg-blue-600 hover:bg-blue-700"
+                onClick={() =>
+                  setVisibility(visibility === true ? false : true)
+                }
+              >
+                {visibility === true ? <FaLock /> :<FaGlobe /> }
+                {visibility === true ? 'Private' : 'Public'}
+              </button>
+            </div>
+          )}
 
           {/* Submit Button */}
           <button

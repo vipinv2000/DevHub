@@ -31,6 +31,10 @@ const postSchema = new mongoose.Schema({
           default: [],
         }
       ],
+      isJob:{
+        type:Boolean,
+        default:false
+      },
       isPrivate: {
         type: Boolean,
         default: false,
