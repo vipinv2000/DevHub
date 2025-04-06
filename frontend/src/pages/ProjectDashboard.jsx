@@ -47,7 +47,9 @@ const ProjectDashboard = () => {
    
      return toast.success("Opening chat...");
   };
-
+if(listOpenings.length==0){
+  return <h1 className='pt-[22%] pl-[42%] text-2xl'>No Projects for you...</h1>
+}
   return (
     <div className='pt-5 max-h-screen bg-white p-6 overflow-auto'>
      <h1 className='text-4xl font-extrabold mb-3'>Get started....</h1>

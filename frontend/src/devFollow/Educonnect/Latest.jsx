@@ -49,7 +49,7 @@ function Latest() {
           </p>
           <div className="mt-8">
             <Link 
-              to="/colleges" 
+              to="/devFlow/colleges" 
               className="inline-block bg-rose-500 hover:bg-rose-600 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-300"
             >
               Explore Colleges
