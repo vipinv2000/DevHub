@@ -61,7 +61,7 @@ const App = () => {
 
       {!["/", "/add-story", "/add-post", "/chooseDeveloper", "/InteractedUsersList", "/MyProjectDetails", "/devhub"].includes(location.pathname) &&
         !location.pathname.startsWith("/devProfile/") &&
-        !location.pathname.startsWith("/devhub") && !location.pathname.startsWith("/devFlow") && <Navbar />}
+        !location.pathname.startsWith("/devhub") && !location.pathname.startsWith("/devflow") && !location.pathname.startsWith("/devFlow/") && <Navbar />}
 
 
 

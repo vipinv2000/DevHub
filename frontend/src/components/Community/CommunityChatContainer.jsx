@@ -95,11 +95,14 @@ const CommunityChatContainer = () => {
 
                   {
                     message.image && (
-                      <img
-                        src={message.image}
-                        alt="Attachment"
-                        className="sm:max-w-[200px] rounded-md mb-2"
-                      />
+                      <a href={message.link}>
+                        <img
+                          src={message.image}
+                          alt="Attachment"
+                          className="sm:max-w-[200px] rounded-md mb-2"
+                        />
+                      </a>
+
                     )
                   }
                   {message.text && <p className="text-center text-white">{message.text}</p>}
