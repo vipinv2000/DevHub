@@ -60,6 +60,7 @@ const DevHubSidebar = () => {
             name: 'Settings',
             icon: Settings,
             id: 'settings',
+            path: '/profile'
             
           },
         ].map(item => (

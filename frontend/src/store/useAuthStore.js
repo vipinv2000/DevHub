@@ -51,7 +51,7 @@ export const useAuthStore = create((set, get) => ({
     } catch (error) {
       console.log("ERRRRRRRRRRRRRRRRRR",error);
       
-      //toast.error(error.response.data.message);
+      toast.error(error?.response?.data?.message);
     }
   },
 
@@ -205,3 +205,4 @@ export const useAuthStore = create((set, get) => ({
     }
   }
 }));
+

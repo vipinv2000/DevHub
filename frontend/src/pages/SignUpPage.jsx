@@ -61,6 +61,7 @@ const SignUpPage = () => {
         field: selectedSkills,
       };
       signup(updatedFormData,setIsCompleteRegistration);
+      
     }
   };
 
@@ -370,3 +371,4 @@ const SignUpPage = () => {
   );
 };
 export default SignUpPage;
+
