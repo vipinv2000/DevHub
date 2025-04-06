@@ -8,9 +8,11 @@ import Project from '../models/project.model.js';
 
 export const addpost = async (req, res) => {
   const userId = req.user._id;
-  const { caption, image, description, visibility } = req.body;
+  const { caption, image, description, visibility,isJob } = req.body;
 
   try {
+    console.log(req.body);
+    
     let imageUrl;
     if (image) {
       // Upload base64 image to cloudinary
@@ -22,7 +24,8 @@ export const addpost = async (req, res) => {
       caption,
       image: imageUrl,
       description,
-      isPrivate: visibility == 'public' ? true : false,
+      isPrivate: isJob === true ?false : visibility ,
+      isJob:isJob,
 
       date: new Date(),
     };

@@ -33,24 +33,28 @@ const Feedpost = ({ singlePost, post, isprofile = false, toggleRefresh }) => {
 
   return (
     <div
-
-      className={`${isprofile ? "w-[50%]" : "w-full"} mb-6 p-5 rounded-lg shadow-md border ${singlePost.isPrivate ? "border-green-500" : "border-gray-700"
-        } bg-gray-800 relative flex flex-col justify-between`}
-    >
+    className={`${isprofile ? "w-[50%]" : "w-full"} mb-6 p-5 rounded-lg shadow-md border ${singlePost.isPrivate ? "border-green-500" : "border-gray-700"} ${singlePost.isJob ? "bg-gray-700" : "bg-black"} relative flex flex-col justify-between`}
+  >
+  
       {/* Post Content */}
       <div>
-        {!isprofile && post?.user && (
+        {!isprofile && post?.user && (  
           <div className="flex items-center gap-3">
+            
             <img
               src={post?.user?.profilePic || "/avatar.png"}
               alt="user"
               className="w-12 h-12 rounded-full border border-gray-600"
             />
-            <div>
+            <div className='mr-[35%]'>
               <h3 className="font-semibold text-lg">{post?.user?.fullName || "Unknown User"}</h3>
               <p className="text-xs text-gray-400">{new Date(singlePost.date).toLocaleString()}</p>
             </div>
+            {singlePost.isJob  &&(<h1 className='font-extrabold text-2xl ' >JOB RELATED POST</h1>
+            )
+            }
           </div>
+          
         )}
 
         {isprofile && (

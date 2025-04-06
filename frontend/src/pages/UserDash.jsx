@@ -29,6 +29,7 @@ const UserDashboard = () => {
 
   useEffect(() => {
     fetchPosts();
+    console.log("postttttt",posts);
   }, [page]);
 
   const fetchStories = async () => {
@@ -46,6 +47,8 @@ const UserDashboard = () => {
         setStories(formattedStories.reverse());
       } else {
         setStories([]);
+        
+        
       }
     } catch (error) {
       console.error("Error fetching stories:", error);
@@ -73,6 +76,7 @@ const UserDashboard = () => {
       }
 
       setLoading(false);
+      
     } catch (error) {
       setError(true);
       setLoading(false);
