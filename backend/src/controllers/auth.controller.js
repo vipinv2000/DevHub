@@ -92,7 +92,7 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email,isOTPVerifyed:true });
 
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
@@ -165,7 +165,7 @@ export const VerifyOtp = async (req, res) => {
   try {
     const { userId } = req.params;
     const { otp } = req.body;
-    const founedUser = await User.findById(userId);
+    const founedUser = await User.findOne({_id:userId,isOTPVerifyed:false,isRegister:true});
 
     if (!founedUser) {
       return res.status(404).json({ success: false, message: "User Not Found" });
@@ -185,7 +185,7 @@ export const VerifyOtp = async (req, res) => {
     } else {
       return res.status(400).json({
         success: false,
-        message: "Somting went to wrong"
+        message: "OTP verification failed"
       })
     }
   } catch (error) {

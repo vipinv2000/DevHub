@@ -40,15 +40,34 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  signup: async (data) => {
-    set({ isSigningUp: true });
+  signup: async (data, setIsCompleteRegistration) => {
+
     try {
       const res = await axiosInstance.post("/auth/signup", data);
-      set({ authUser: res.data });
+      set({ userIdforOtp: res?.data?._id });
+      setIsCompleteRegistration(true)
       toast.success("Account created successfully");
-      get().connectSocket();
+      // get().connectSocket();
     } catch (error) {
-      toast.error(error.response.data.message);
+      console.log("ERRRRRRRRRRRRRRRRRR",error);
+      
+      //toast.error(error.response.data.message);
+    }
+  },
+
+  VerifyEmail: async (otp, userid) => {
+    set({ isSigningUp: true });
+    try {
+
+      console.log("Otp", otp, "userId", userid);
+
+      const { data } = await axiosInstance.post(`/auth/VerifyOtp/${userid}`, { otp });
+        toast.success(data.message);
+        set({  authUser:data})
+        get().connectSocket();
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.message);
     } finally {
       set({ isSigningUp: false });
     }
@@ -72,11 +91,11 @@ export const useAuthStore = create((set, get) => ({
   logout: async () => {
     try {
       console.log("caling");
-      
+
       await axiosInstance.post("/auth/logout");
       set({ authUser: null });
       toast.success("Logged out successfully");
-      
+
       get().disconnectSocket();
     } catch (error) {
       toast.error(error.response.data.message);
@@ -177,7 +196,7 @@ export const useAuthStore = create((set, get) => ({
       console.log("Error in fetching developers:", error);
     }
   },
-  send_Follow_Request_To_deVeloper: async(devId,type) => {
+  send_Follow_Request_To_deVeloper: async (devId, type) => {
     try {
       const res = await axiosInstance.patch(`/userdash/requestFollow/${devId}/${type}`);
 

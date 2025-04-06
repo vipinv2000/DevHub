@@ -49,6 +49,8 @@ router.get("/InterestRequestReject/:devId/:projectId", protectRoute, InterestReq
 router.get("/InterestRequestAccept/:devId/:projectId", protectRoute, InterestRequestAccept)
 router.get("/ownerMyProjects",protectRoute,ownerMyProjects)
 
+//router.get('/getJobPostOnly',protectRoute);
+
 
 
 export default router;
