@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema(
     },
     isOTPVerifyed: {
       type: Boolean,
-      default: false
+      default: false,
     },
     action: {
       type: [
