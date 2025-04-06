@@ -28,6 +28,8 @@ const MyProjectDetails = () => {
   const [showProjectDetails, setShowProjectDetails] = useState(false);
   const [projects, setprojects] = useState([]);
   const [selectedTab, setSelectedTab] = useState('one');
+  const [refreshStatus, setRefreshStatus] = useState(false);
+
   const {
     getProjectGroup,
     projectGroup,
@@ -69,7 +71,7 @@ const MyProjectDetails = () => {
     fetchMyProjectsUpdates();
     getProjectGroup();
     console.log('cheking Rating', projects);
-  }, [selectedTab]);
+  }, [selectedTab,refreshStatus]);
 
   const handleAccept = async (developerId, projectId) => {
     try {
@@ -183,7 +185,7 @@ const MyProjectDetails = () => {
       await axiosInstance.patch(
         `/projectMessage//updateStatus/${projectId}/${newStatus}`
       );
-
+       setRefreshStatus(prev => !prev);
       toast.success('Status updated successfully');
     } catch (error) {
       toast.error('Failed to update status');
@@ -242,7 +244,7 @@ const MyProjectDetails = () => {
                 <div
                   key={project._id}
                   onClick={() => handleProjectClick(project)}
-                  className="bg-slate-300 rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition-shadow flex flex-col h-full"
+                  className="bg-slate-300 rounded-lg shadow-2xl p-6 cursor-pointer hover:shadow-lg transition-shadow flex flex-col h-full"
                 >
                   <div className="flex-grow">
                     <div className="flex justify-between items-start mb-4">
