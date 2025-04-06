@@ -95,7 +95,7 @@ const AddProject = () => {
     <div className="bg-gray-200 min-h-screen flex items-center justify-center">
   <div className="max-w-2xl w-full bg-gray-100 p-8 rounded-lg shadow-lg">
     <h1 className="text-xl font-bold text-gray-800 mb-6 text-center">Add Project</h1>
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 ">
       
       {/* Project Name */}
       <div className="form-control">

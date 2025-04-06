@@ -84,7 +84,7 @@ const comunitySchema = new mongoose.Schema(
                         type: Date,
                         default: Date.now,
                     },
-                    description: {
+                    text: {
                         type: String,
                         default: '',
                     },

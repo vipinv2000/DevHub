@@ -179,6 +179,9 @@ export const sendCommunityPost = async (req, res) => {
         const { cumId } = req.params;
         const senderId = req.user._id;
 
+        console.log("req.body",req.body);
+        
+
         const senderUser = await User.findOne({ _id: senderId }).select("_id fullName profilePic");
         const CumDetails = await Comunity.findById(cumId);
         if (!CumDetails) {
@@ -206,7 +209,7 @@ export const sendCommunityPost = async (req, res) => {
             name,
             image: imageUrl,
             createdAt: new Date(),
-            description,
+            text:description,
             link,
             isOwner: CumDetails.owner.toString() === senderId.toString()
         };
@@ -220,7 +223,7 @@ export const sendCommunityPost = async (req, res) => {
             name,
             image: imageUrl,
             createdAt: new Date(),
-            description,
+            text:description,
             link,
             isOwner: CumDetails.owner.toString() === senderId.toString()
         }

@@ -24,19 +24,30 @@ const userSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
-
+    otp: {
+      type: String,
+      default: ""
+    },
+    isRegister: {
+      type: Boolean,
+      default: false
+    },
+    isOTPVerifyed: {
+      type: Boolean,
+      default: false
+    },
     action: {
-      type:[
+      type: [
         {
           userId: { type: Schema.Types.ObjectId, ref: 'User' },
-          follow:{
-            type:String,
-            default:""
+          follow: {
+            type: String,
+            default: ""
           }
         },
       ], default: [],
     },
-   
+
   },
   { timestamps: true }
 );

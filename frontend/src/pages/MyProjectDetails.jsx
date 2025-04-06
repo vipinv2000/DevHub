@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { axiosInstance } from '../lib/axios';
-import { ArrowDown, Check, Circle, MessageCircleCodeIcon, MessageSquare, MessageSquareText, MessagesSquare, Users, X } from 'lucide-react';
+import { ArrowDown, Check, Circle, MessageCircleCodeIcon, MessageSquare, MessageSquareText, MessagesSquare, Plus, Users, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from 'antd';
 import { ProjectGroupSidebarFunction } from '../store/projectGroupStore';
 import ProjectGroupSidebar from '../devHub/ProjectGroupSidebar';
 import { useAuthStore } from '../store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
+import { FaArrowDown } from "react-icons/fa";
+import { FaGithub } from "react-icons/fa";
+import { FaDownload } from "react-icons/fa6";
+import { format } from 'date-fns';
+import { TbDownloadOff } from "react-icons/tb";
+
 
 const MyProjectDetails = () => {
   const [selectedProject, setSelectedProject] = useState(null);
@@ -14,8 +20,11 @@ const MyProjectDetails = () => {
   const [showProjectDetails, setShowProjectDetails] = useState(false);
   const [projects, setprojects] = useState([]);
   const [selectedTab, setSelectedTab] = useState("one")
+  const [extend, setExtend] = useState(null)
+  const [loading, setLoading] = useState(false);
+  const [loadingIndex, setLoadingIndex] = useState(null)
 
-  const { getProjectGroup, projectGroup ,setSelectedProjectGroup, selectedProjectGroup} = ProjectGroupSidebarFunction();
+  const { getProjectGroup, projectGroup, setSelectedProjectGroup, selectedProjectGroup } = ProjectGroupSidebarFunction();
 
   const [expanded, setExpanded] = useState(null);
   const [formData, setFormData] = useState({
@@ -26,7 +35,7 @@ const MyProjectDetails = () => {
   });
 
   const { authUser } = useAuthStore();
-  const Navigate =useNavigate()
+  const Navigate = useNavigate()
 
   const handleProjectClick = project => {
     setSelectedProject(project);
@@ -125,14 +134,24 @@ const MyProjectDetails = () => {
       return;
     }
 
+    if (formData.title === "" || formData.description === "" || formData.githubLink === "" || formData.zipFile === null) {
+      toast.error("All fiels should needed");
+      return
+    }
+
+    if (formData.zipFile.size >= 50 * 1024 * 1024) {
+      toast.error("File size should not exceed 50MB");
+      return;
+    }
+
     const submissionData = new FormData();
     submissionData.append("title", formData.title);
     submissionData.append("description", formData.description);
     submissionData.append("githubLink", formData.githubLink);
-
+    submissionData.append("fileNameIs", formData.zipFile.name);
     if (formData.zipFile) {
       submissionData.append("zipFile", formData.zipFile);
-    }else{
+    } else {
       toast.error("Zip file needed")
       setExpanded(null)
     }
@@ -167,24 +186,64 @@ const MyProjectDetails = () => {
 
     } catch (error) {
       console.error("Error submitting code file:", error.response?.data || error.message);
+      toast.error(error.response?.data || error.message)
     }
     console.log("Form Data Submitted:", formData);
 
   };
 
+  const handleDownload = async (filepath, fileName, loadingIndex) => {
+    try {
+      setLoading(true);
+      setLoadingIndex(loadingIndex)
+
+      if (fileName === undefined || filepath === undefined) {
+        toast.error("File Not found")
+      } else {
+
+        console.log("Download URL:", filepath);
+        console.log("Filename:", fileName);
+
+        setTimeout(async() => {
+          const response = await fetch(filepath);
+          if (!response.ok) throw new Error("Failed to download");
+
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+          toast.success("Downloading Success")
+          setLoading(false);
+        }, 2000);
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+    } finally {
+      
+    }
+  };
+
+
+
   return (
     <div className="min-h-screen bg-gray-100">
-      
+
       <nav className="bg-white shadow-lg">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex justify-center space-x-8 py-4">
             <button
               onClick={() => setSelectedTab("one")}
-              className={`relative px-6 py-2 text-lg font-medium transition-all duration-200 ${
-                selectedTab === "one"
-                  ? "text-blue-600 transform scale-110"
-                  : "text-gray-600 hover:text-blue-500"
-              }`}
+              className={`relative px-6 py-2 text-lg font-medium transition-all duration-200 ${selectedTab === "one"
+                ? "text-blue-600 transform scale-110"
+                : "text-gray-600 hover:text-blue-500"
+                }`}
             >
               My Projects
               {selectedTab === "one" && (
@@ -194,11 +253,10 @@ const MyProjectDetails = () => {
 
             <button
               onClick={() => setSelectedTab("two")}
-              className={`relative px-6 py-2 text-lg font-medium transition-all duration-200 ${
-                selectedTab === "two"
-                  ? "text-blue-600 transform scale-110"
-                  : "text-gray-600 hover:text-blue-500"
-              }`}
+              className={`relative px-6 py-2 text-lg font-medium transition-all duration-200 ${selectedTab === "two"
+                ? "text-blue-600 transform scale-110"
+                : "text-gray-600 hover:text-blue-500"
+                }`}
             >
               Committed Projects
               {selectedTab === "two" && (
@@ -289,23 +347,23 @@ const MyProjectDetails = () => {
                           </div>
                         )}
                       </div>
-                     <div  className='flex gap-5'>
-                     <div
-                       onClick={()=>{
-                        setSelectedProjectGroup(project)
-                        Navigate('/devhub/ChatGroupRoot')
-                      }}
-                        className="text-sm text-gray-400 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition-colors "
-                      >
-                        <MessageSquareText size={20} />
+                      <div className='flex gap-5'>
+                        <div
+                          onClick={() => {
+                            setSelectedProjectGroup(project)
+                            Navigate('/devhub/ChatGroupRoot')
+                          }}
+                          className="text-sm text-gray-400 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition-colors "
+                        >
+                          <MessageSquareText size={20} />
+                        </div>
+                        <div
+                          onClick={() => setExpanded(index === expanded ? null : index)}
+                          className="text-sm text-gray-400 bg-gray-200 p-1 rounded-full hover:bg-gray-300 transition-colors"
+                        >
+                          <ArrowDown className={`transform transition-transform duration-200 ${expanded === index ? 'rotate-180' : ''}`} />
+                        </div>
                       </div>
-                     <div
-                        onClick={() => setExpanded(index === expanded ? null : index)}
-                        className="text-sm text-gray-400 bg-gray-200 p-1 rounded-full hover:bg-gray-300 transition-colors"
-                      >
-                        <ArrowDown className={`transform transition-transform duration-200 ${expanded === index ? 'rotate-180' : ''}`} />
-                      </div>
-                     </div>
                     </div>
                   </div>
 
@@ -387,7 +445,7 @@ const MyProjectDetails = () => {
         {/* Project Details Modal */}
         {showProjectDetails && selectedProject && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto hide-scrollbar">
               <div className="p-6">
                 <div className="flex justify-between items-start mb-6">
                   <h2 className="text-2xl font-bold text-gray-900">
@@ -424,12 +482,12 @@ const MyProjectDetails = () => {
                         {new Date(selectedProject.deadline).toLocaleDateString()}
                       </p>
                     </div>
-                    <div className='ml-16'><MessageSquare 
-                    onClick={()=>{
-                      setSelectedProjectGroup(selectedProject)
-                      Navigate('/devhub/ChatGroupRoot')
-                    }}
-                     className="w-5 h-5 text-primary cursor-pointer" /></div>
+                    <div className='ml-16'><MessageSquare
+                      onClick={() => {
+                        setSelectedProjectGroup(selectedProject)
+                        Navigate('/devhub/ChatGroupRoot')
+                      }}
+                      className="w-5 h-5 text-primary cursor-pointer" /></div>
                     <div>
                       <span className="font-medium text-gray-600">Tech Stack:</span>
                       <div className="flex flex-wrap gap-2 mt-2">
@@ -448,30 +506,114 @@ const MyProjectDetails = () => {
 
                 <div className="border-t pt-6">
                   <h3 className="text-lg font-semibold mb-4">Contributors</h3>
-                  <div className="space-y-4">
+                  <div className="space-y-4 ">
                     {selectedProject.contributors && selectedProject.contributors.length > 0 ? (
-                      selectedProject.contributors.map(contributor => (
-                        <div
-                          key={contributor._id}
-                          className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg"
-                        >
-                          <img
-                            src={contributor.userId.profilePic}
-                            alt={contributor.userId.fullName}
-                            className="w-12 h-12 rounded-full object-cover"
-                          />
-                          <div>
-                            <h4 className="font-medium text-gray-900">
-                              {contributor.userId.fullName}
-                            </h4>
-                            <p className="text-gray-500 text-sm">
-                              {contributor.userId.email}
-                            </p>
-                            <p className="text-gray-500 text-sm">
-                              Joined: {new Date(contributor.DateTime).toLocaleDateString()}
-                            </p>
+                      selectedProject.contributors.map((contributor, index) => (
+                        <div className='flec flex-col gap-6'>
+                          <div
+                            key={contributor._id}
+                            className="flex items-center justify-between space-x-4 p-4 bg-gray-50 rounded-lg relative"
+                          >
+                            <div className='flex justify-center gap-3'>
+                              <img
+                                src={contributor.userId.profilePic}
+                                alt={contributor.userId.fullName}
+                                className="w-12 h-12 rounded-full object-cover"
+                              />
+                              <div>
+                                <h4 className="font-medium text-gray-900">
+                                  {contributor.userId.fullName}
+                                </h4>
+                                <p className="text-gray-500 text-sm">
+                                  {contributor.userId.email}
+                                </p>
+                                <p className="text-gray-500 text-sm">
+                                  Joined: {new Date(contributor.DateTime).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+                            <div className={` p-3 rounded-full ${extend === index ? 'rotate-180 bg-gray-300' : 'bg-gray-200'} `} onClick={() => setExtend(index === extend ? null : index)}>
+                              <FaArrowDown color={`gray `} />
+                            </div>
+
                           </div>
+                          {
+                            extend === index && (
+                              <div className='h-auto w-full bg-gray-50 rounded-b-xl p-3 text-gray-600'>
+                                {
+                                  contributor.moduleSubmissions.length != 0 ? (
+                                    contributor.moduleSubmissions.map((item, index2) => (
+                                      <>
+                                        <div className='m-2 bg-gray-100 rounded-lg p-2 hover:bg-gray-200 relative'>
+                                          <div className='flex items-center justify-between mx-8'>
+                                            <div className='flex flex-col gap-2'>
+                                              <h1 className='text-lg'>{item.title}</h1>
+                                              <h1 className='text-sm line-clamp-2'>{item.description}</h1>
+                                              <h1 className='text-sm'>{item.completionPercentage}% completed</h1>
+
+                                              <h1 className='text-xs text-gray-400 italic absolute bottom-1 right-3'>{format(new Date(item.submittedAt), 'HH:mm , yyyy-MM-dd ')}</h1>
+
+                                            </div>
+                                            <div>
+                                              {
+                                                loadingIndex === index2 && loading && <span className="flex items-center gap-2">
+                                                  <svg
+                                                    className="animate-spin h-4 w-4 text-green-300"
+                                                    viewBox="0 0 24 24"
+                                                  >
+                                                    <circle
+                                                      className="opacity-25"
+                                                      cx="12"
+                                                      cy="12"
+                                                      r="10"
+                                                      stroke="currentColor"
+                                                      strokeWidth="4"
+                                                      fill="none"
+                                                    />
+                                                    <path
+                                                      className="opacity-75"
+                                                      fill="currentColor"
+                                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                                                    />
+                                                  </svg>
+                                                  <span className='italic text-sm text-gray-400'>Downloading...</span>
+                                                </span>
+                                              }
+
+                                            </div>
+                                            <div className='flex items-center gap-8'>
+                                              <a className='text-gray-600 hover:text-gray-800 hover:bg-white rounded-full hover:scale-110' href={item.githubLink}><FaGithub size={24} /></a>
+                                              {
+                                                item.filePath && item.fileName ? (
+                                                  <div
+                                                    onClick={() => handleDownload(item.filePath, item.fileName, index2)}
+                                                    className=' p-2 rounded-full text-gray-600 hover:bg-white hover:text-gray-800 cursor-pointer hover:scale-110'>
+                                                    <FaDownload />
+
+                                                  </div>
+                                                ) : (
+                                                  <div
+                                                    className='p-2 rounded-full text-gray-400 '>
+                                                    <TbDownloadOff size={21} />
+                                                  </div>
+                                                )
+                                              }
+
+                                            </div>
+                                          </div>
+
+                                        </div >
+                                      </>
+                                    ))
+                                  ) : (
+                                    <h1 className='ml-3 italic text-sm text-red-500'>Their Is No Module submission Found!</h1>
+                                  )
+                                }
+                              </div>
+                            )
+                          }
                         </div>
+
                       ))
                     ) : (
                       <p className="text-gray-500 text-center">No contributors yet</p>

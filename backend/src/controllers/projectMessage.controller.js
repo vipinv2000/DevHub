@@ -141,7 +141,7 @@ export const CodeSubmission = async (req, res) => {
     try {
         const userId = req.user._id; // Get user ID from authenticated request
         const { projectId } = req.params;
-        const { title, githubLink, description } = req.body;
+        const { title, githubLink, description,fileNameIs } = req.body;
         const zipFile = req.files?.zipFile; // express-fileupload handles file uploads as req.files
 
         console.log(req.body);
@@ -185,6 +185,7 @@ export const CodeSubmission = async (req, res) => {
             description,
             filePath: zipFilePath, // Store file path
             submittedAt: new Date(),
+            fileName:fileNameIs
         };
 
         // Push submission into contributor's moduleSubmissions
